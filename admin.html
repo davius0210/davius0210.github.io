@@ -114,6 +114,7 @@
             min-height: 100px;
         }
 
+        /* Dynamic Items Styling */
         .dynamic-list {
             margin-top: 15px;
         }
@@ -127,6 +128,26 @@
             position: relative;
         }
 
+        /* Project Specific Styles */
+        .project-item {
+            border-left-color: #ff9800;
+        }
+
+        /* Orange for projects to distinguish */
+        .links-container {
+            background: rgba(0, 0, 0, 0.2);
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 10px;
+            border: 1px dashed #555;
+        }
+
+        .link-row {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 5px;
+        }
+
         .btn {
             background: var(--sim-green);
             color: #000;
@@ -136,17 +157,22 @@
             cursor: pointer;
             font-weight: bold;
             margin-top: 10px;
+            display: inline-block;
         }
 
         .btn:hover {
             background: var(--sim-green-dark);
         }
 
+        .btn-small {
+            padding: 5px 10px;
+            font-size: 0.8rem;
+            margin-top: 5px;
+        }
+
         .btn-remove {
             background: var(--danger);
             color: white;
-            padding: 5px 10px;
-            font-size: 0.8rem;
             position: absolute;
             top: 10px;
             right: 10px;
@@ -181,9 +207,8 @@
 
 <body>
 
-    <!-- CEK LOGIN SCRIPT (Berjalan paling awal) -->
+    <!-- CEK LOGIN SCRIPT -->
     <script>
-        // Cek apakah user sudah login sebelum menampilkan isi
         if (localStorage.getItem('isLoggedIn') !== 'true') {
             window.location.href = "login.html";
         }
@@ -203,22 +228,10 @@
             <!-- SECTION 1: INFO DASAR -->
             <h2>1. Identitas Sim</h2>
             <div class="form-grid">
-                <div class="full-width">
-                    <label>Nama Lengkap</label>
-                    <input type="text" id="name">
-                </div>
-                <div>
-                    <label>Job Title</label>
-                    <input type="text" id="title">
-                </div>
-                <div>
-                    <label>URL Foto Profil</label>
-                    <input type="text" id="image">
-                </div>
-                <div class="full-width">
-                    <label>Bio Singkat</label>
-                    <textarea id="bio"></textarea>
-                </div>
+                <div class="full-width"><label>Nama Lengkap</label><input type="text" id="name"></div>
+                <div><label>Job Title</label><input type="text" id="title"></div>
+                <div><label>URL Foto Profil</label><input type="text" id="image"></div>
+                <div class="full-width"><label>Bio Singkat</label><textarea id="bio"></textarea></div>
             </div>
 
             <!-- SECTION 2: CONTACT -->
@@ -245,8 +258,13 @@
             <div class="dynamic-list" id="jobs-list"></div>
             <button type="button" class="btn" onclick="addJobRow()">+ Tambah Pekerjaan</button>
 
-            <!-- SECTION 6: EDUCATION -->
-            <h2>6. Pendidikan & Aspirasi</h2>
+            <!-- SECTION 6: PROJECTS (NEW SECTION) -->
+            <h2>6. Projects Portfolio</h2>
+            <div class="dynamic-list" id="projects-list"></div>
+            <button type="button" class="btn" onclick="addProjectRow()">+ Tambah Project</button>
+
+            <!-- SECTION 7: EDUCATION -->
+            <h2>7. Pendidikan & Aspirasi</h2>
             <div class="form-grid">
                 <div><label>Universitas / Sekolah</label><input type="text" id="edu_school"></div>
                 <div><label>Gelar / Degree</label><input type="text" id="edu_degree"></div>
@@ -265,7 +283,6 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
         import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
 
-        // --- KONFIGURASI FIREBASE (PASTE KONFIG ANDA) ---
         const firebaseConfig = {
             apiKey: "AIzaSyDxqQOEuFjIR2W9-lrtAjaYsqPMHa8-6X4",
             authDomain: "jimmy-27ea1.firebaseapp.com",
@@ -280,18 +297,15 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        // --- FUNGSI LOGOUT ---
         window.logout = function () {
             localStorage.removeItem('isLoggedIn');
             localStorage.removeItem('userName');
             window.location.href = "login.html";
         }
-
-        // Tampilkan nama user
         const userName = localStorage.getItem('userName');
         if (userName) document.getElementById('display-username').innerText = userName;
 
-        // --- FUNGSI MANAJEMEN UI (SAMA SEPERTI SEBELUMNYA) ---
+        // --- HELPER FUNCTIONS (Traits, Skills, Jobs) ---
         window.addTraitRow = function (icon = "", label = "") {
             const container = document.getElementById('traits-list');
             const div = document.createElement('div');
@@ -340,6 +354,61 @@
             container.appendChild(div);
         }
 
+        // --- NEW: PROJECT FUNCTIONS ---
+
+        // Fungsi untuk menambah baris Link di dalam sebuah Project
+        window.addLinkRow = function (btnElement) {
+            // Cari container link terdekat dari tombol yang diklik
+            const container = btnElement.parentElement.querySelector('.links-container');
+            const div = document.createElement('div');
+            div.className = 'link-row';
+            div.innerHTML = `
+            <input type="text" placeholder="Label (misal: Demo)" class="in-link-label">
+            <input type="text" placeholder="URL Link" class="in-link-url">
+        `;
+            container.appendChild(div);
+        }
+
+        // Fungsi untuk menambahkan Project Card Baru
+        window.addProjectRow = function (title = "", category = "", description = "", image = "", linksArr = []) {
+            const container = document.getElementById('projects-list');
+            const div = document.createElement('div');
+            div.className = 'dynamic-item project-item';
+
+            // Generate existing links HTML if loading data
+            let linksHtml = '';
+            if (linksArr && linksArr.length > 0) {
+                linksArr.forEach(link => {
+                    linksHtml += `
+                    <div class="link-row">
+                        <input type="text" placeholder="Label" class="in-link-label" value="${link.label}">
+                        <input type="text" placeholder="URL" class="in-link-url" value="${link.url}">
+                    </div>
+                `;
+                });
+            }
+
+            div.innerHTML = `
+            <button type="button" class="btn btn-remove" onclick="this.parentElement.remove()">Hapus</button>
+            <div class="form-grid">
+                <div><label>Project Title</label><input type="text" class="in-p-title" value="${title}"></div>
+                <div><label>Category</label><input type="text" class="in-p-category" value="${category}"></div>
+                <div class="full-width"><label>Image URL</label><input type="text" class="in-p-image" value="${image}"></div>
+                <div class="full-width">
+                    <label>Description</label>
+                    <textarea class="in-p-desc">${description}</textarea>
+                </div>
+            </div>
+            
+            <label style="margin-top:10px; color:#aaa; font-size:0.8rem;">Links (Demo, GitHub, etc):</label>
+            <div class="links-container">
+                ${linksHtml}
+            </div>
+            <button type="button" class="btn btn-small" onclick="addLinkRow(this)">+ Tambah Link</button>
+        `;
+            container.appendChild(div);
+        }
+
         // --- LOAD DATA ---
         async function loadData() {
             const docRef = doc(db, "cv_data", "main_profile");
@@ -363,14 +432,29 @@
                     document.getElementById('edu_degree').value = data.education.degree || "";
                     document.getElementById('edu_aspiration').value = data.education.aspiration || "";
                 }
+
+                // Load Lists
                 document.getElementById('traits-list').innerHTML = '';
                 if (data.traits) data.traits.forEach(t => addTraitRow(t.icon, t.label));
+
                 document.getElementById('skills-list').innerHTML = '';
                 if (data.skills) data.skills.forEach(s => addSkillRow(s.name, s.level));
+
                 document.getElementById('jobs-list').innerHTML = '';
                 if (data.jobs) data.jobs.forEach(j => addJobRow(j.role, j.company, j.date, j.details));
+
+                // Load NEW Projects
+                document.getElementById('projects-list').innerHTML = '';
+                if (data.projects) {
+                    data.projects.forEach(p => {
+                        addProjectRow(p.title, p.category, p.description, p.image, p.links);
+                    });
+                }
             }
-            addSkillRow(); addJobRow(); // Default empty rows
+            // Add empty defaults if needed
+            if (document.getElementById('projects-list').innerHTML === '') {
+                addProjectRow();
+            }
         }
 
         // --- SAVE DATA ---
@@ -396,6 +480,7 @@
                 }
             };
 
+            // Get Traits
             newData.traits = [];
             document.querySelectorAll('#traits-list .dynamic-item').forEach(item => {
                 newData.traits.push({
@@ -404,6 +489,7 @@
                 });
             });
 
+            // Get Skills
             newData.skills = [];
             document.querySelectorAll('#skills-list .dynamic-item').forEach(item => {
                 let lvl = parseInt(item.querySelector('.in-level').value) || 1;
@@ -414,6 +500,7 @@
                 });
             });
 
+            // Get Jobs
             newData.jobs = [];
             document.querySelectorAll('#jobs-list .dynamic-item').forEach(item => {
                 const detailsRaw = item.querySelector('.in-details').value;
@@ -423,6 +510,28 @@
                     company: item.querySelector('.in-company').value,
                     date: item.querySelector('.in-date').value,
                     details: detailsArr
+                });
+            });
+
+            // --- NEW: Get Projects ---
+            newData.projects = [];
+            document.querySelectorAll('.project-item').forEach(item => {
+                // Get nested links
+                const linksArr = [];
+                item.querySelectorAll('.link-row').forEach(lRow => {
+                    const label = lRow.querySelector('.in-link-label').value;
+                    const url = lRow.querySelector('.in-link-url').value;
+                    if (label && url) {
+                        linksArr.push({ label, url });
+                    }
+                });
+
+                newData.projects.push({
+                    title: item.querySelector('.in-p-title').value,
+                    category: item.querySelector('.in-p-category').value,
+                    image: item.querySelector('.in-p-image').value,
+                    description: item.querySelector('.in-p-desc').value,
+                    links: linksArr
                 });
             });
 
