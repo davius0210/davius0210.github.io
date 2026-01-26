@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,10 +12,15 @@
             --sim-green: #76ff03;
             --sim-green-dark: #64dd17;
             --sim-blue: #29b6f6;
+            --sim-purple: #d946ef;
             --sim-bg: #1a1a1a;
             --sim-panel: #2d2d2d;
             --sim-text: #ffffff;
             --bar-bg: #424242;
+        }
+
+        * {
+            box-sizing: border-box;
         }
 
         body {
@@ -33,14 +39,17 @@
 
         .container {
             width: 100%;
-            max-width: 1000px;
+            max-width: 1200px;
             background: var(--sim-bg);
             border: 4px solid var(--sim-panel);
             border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            overflow: hidden;
+        }
+
+        .main-grid {
             display: grid;
             grid-template-columns: 350px 1fr;
-            overflow: hidden;
         }
 
         /* Left Panel */
@@ -51,155 +60,607 @@
             position: relative;
         }
 
-        .plumbob-container { height: 60px; display: flex; justify-content: center; align-items: center; margin-bottom: -20px; z-index: 10; position: relative; }
-        .plumbob { width: 30px; height: 30px; background: var(--sim-green); clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%); position: absolute; animation: float 2s infinite ease-in-out; }
-        .plumbob-shadow { width: 30px; height: 15px; background: rgba(0,0,0,0.3); border-radius: 50%; position: absolute; bottom: -10px; animation: shadow 2s infinite ease-in-out; }
+        .plumbob-container {
+            height: 60px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: -20px;
+            z-index: 10;
+            position: relative;
+        }
 
-        @keyframes float { 0%, 100% { transform: translateY(0) rotate(0deg); } 50% { transform: translateY(-10px) rotate(5deg); } }
-        @keyframes shadow { 0%, 100% { transform: scale(1); opacity: 0.3; } 50% { transform: scale(0.8); opacity: 0.1; } }
+        .plumbob {
+            width: 30px;
+            height: 30px;
+            background: var(--sim-green);
+            clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+            position: absolute;
+            animation: float 2s infinite ease-in-out;
+        }
 
-        .profile-pic-container { width: 150px; height: 150px; background: #000; border: 4px solid var(--sim-green); border-radius: 10px; margin: 40px auto 20px; overflow: hidden; position: relative; }
-        .profile-pic { width: 100%; height: 100%; object-fit: cover; }
+        .plumbob-shadow {
+            width: 30px;
+            height: 15px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 50%;
+            position: absolute;
+            bottom: -10px;
+            animation: shadow 2s infinite ease-in-out;
+        }
 
-        .sim-name { text-align: center; font-size: 1.8rem; font-weight: 900; margin-bottom: 5px; text-shadow: 2px 2px 0px #000; }
-        .sim-title { text-align: center; color: var(--sim-blue); font-weight: 700; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 1px; }
+        @keyframes float {
 
-        .section-title { background: #1f1f1f; color: var(--sim-green); padding: 8px 15px; border-radius: 20px; font-weight: bold; text-transform: uppercase; font-size: 0.9rem; margin: 25px 0 15px; border: 1px solid #444; display: inline-block; }
+            0%,
+            100% {
+                transform: translateY(0) rotate(0deg);
+            }
 
-        .trait { display: flex; align-items: center; margin-bottom: 8px; font-size: 0.9rem; }
-        .trait-icon { width: 25px; height: 25px; background: var(--sim-blue); border-radius: 50%; margin-right: 10px; display: flex; justify-content: center; align-items: center; font-size: 0.7rem; color: #000; font-weight: bold; }
+            50% {
+                transform: translateY(-10px) rotate(5deg);
+            }
+        }
+
+        @keyframes shadow {
+
+            0%,
+            100% {
+                transform: scale(1);
+                opacity: 0.3;
+            }
+
+            50% {
+                transform: scale(0.8);
+                opacity: 0.1;
+            }
+        }
+
+        .profile-pic-container {
+            width: 150px;
+            height: 150px;
+            background: #000;
+            border: 4px solid var(--sim-green);
+            border-radius: 10px;
+            margin: 40px auto 20px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .profile-pic {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .sim-name {
+            text-align: center;
+            font-size: 1.8rem;
+            font-weight: 900;
+            margin-bottom: 5px;
+            text-shadow: 2px 2px 0px #000;
+        }
+
+        .sim-title {
+            text-align: center;
+            color: var(--sim-blue);
+            font-weight: 700;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .section-title {
+            background: #1f1f1f;
+            color: var(--sim-green);
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            text-transform: uppercase;
+            font-size: 0.9rem;
+            margin: 25px 0 15px;
+            border: 1px solid #444;
+            display: inline-block;
+        }
+
+        .trait {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+        }
+
+        .trait-icon {
+            width: 25px;
+            height: 25px;
+            background: var(--sim-blue);
+            border-radius: 50%;
+            margin-right: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 0.7rem;
+            color: #000;
+            font-weight: bold;
+        }
 
         /* Skills Bars */
-        .skill-container { margin-bottom: 12px; }
-        .skill-name { display: flex; justify-content: space-between; font-size: 0.85rem; margin-bottom: 4px; }
-        .progress-bar-bg { height: 12px; background: var(--bar-bg); border-radius: 6px; border: 1px solid #000; overflow: hidden; }
-        .progress-bar-fill { height: 100%; background: linear-gradient(to bottom, var(--sim-green), var(--sim-green-dark)); width: 0%; transition: width 1s ease-out; position: relative; }
+        .skill-container {
+            margin-bottom: 12px;
+        }
 
-        .contact-info { margin-top: 30px; text-align: center; font-size: 0.9rem; }
-        .contact-item { margin-bottom: 8px; color: #ccc; }
+        .skill-name {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85rem;
+            margin-bottom: 4px;
+        }
+
+        .progress-bar-bg {
+            height: 12px;
+            background: var(--bar-bg);
+            border-radius: 6px;
+            border: 1px solid #000;
+            overflow: hidden;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            background: linear-gradient(to bottom, var(--sim-green), var(--sim-green-dark));
+            width: 0%;
+            transition: width 1s ease-out;
+            position: relative;
+        }
+
+        .contact-info {
+            margin-top: 30px;
+            text-align: center;
+            font-size: 0.9rem;
+        }
+
+        .contact-item {
+            margin-bottom: 8px;
+            color: #ccc;
+            word-break: break-word;
+        }
 
         /* Right Panel */
-        .right-panel { padding: 30px; background: #222; }
-        .bio-section { margin-bottom: 30px; border-left: 3px solid var(--sim-green); padding-left: 15px; }
-        .bio-text { line-height: 1.6; color: #ddd; }
+        .right-panel {
+            padding: 30px;
+            background: #222;
+        }
 
-        .job-card { background: #2a2a2a; border: 1px solid #444; border-radius: 10px; padding: 20px; margin-bottom: 20px; position: relative; transition: transform 0.2s; }
-        .job-card:hover { transform: scale(1.01); border-color: var(--sim-green); }
-        .job-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; border-bottom: 1px solid #444; padding-bottom: 10px; }
-        .job-role { color: var(--sim-green); font-weight: bold; font-size: 1.1rem; }
-        .job-company { color: var(--sim-blue); font-size: 0.9rem; }
-        .job-date { background: #000; padding: 3px 8px; border-radius: 4px; font-size: 0.8rem; color: #aaa; }
-        .job-details ul { margin: 0; padding-left: 20px; color: #ccc; }
-        .job-details li { margin-bottom: 5px; }
+        .bio-section {
+            margin-bottom: 30px;
+            border-left: 3px solid var(--sim-green);
+            padding-left: 15px;
+        }
 
-        .edu-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-        .edu-item { background: rgba(255,255,255,0.05); padding: 10px; border-radius: 8px; }
+        .bio-text {
+            line-height: 1.6;
+            color: #ddd;
+        }
 
-        @media (max-width: 800px) { .container { grid-template-columns: 1fr; } .left-panel { border-right: none; border-bottom: 2px solid #000; } }
+        .job-card {
+            background: #2a2a2a;
+            border: 1px solid #444;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            position: relative;
+            transition: transform 0.2s;
+        }
+
+        .job-card:hover {
+            transform: scale(1.01);
+            border-color: var(--sim-green);
+        }
+
+        .job-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 10px;
+            border-bottom: 1px solid #444;
+            padding-bottom: 10px;
+            gap: 10px;
+        }
+
+        .job-role {
+            color: var(--sim-green);
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+
+        .job-company {
+            color: var(--sim-blue);
+            font-size: 0.9rem;
+        }
+
+        .job-date {
+            background: #000;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            color: #aaa;
+            white-space: nowrap;
+        }
+
+        .job-details ul {
+            margin: 0;
+            padding-left: 20px;
+            color: #ccc;
+        }
+
+        .job-details li {
+            margin-bottom: 5px;
+        }
+
+        .edu-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .edu-item {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 10px;
+            border-radius: 8px;
+        }
+
+        /* Project Gallery */
+        .projects-section {
+            margin-top: 30px;
+        }
+
+        .project-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .project-card {
+            background: #2a2a2a;
+            border: 2px solid #444;
+            border-radius: 10px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .project-card:hover {
+            border-color: var(--sim-green);
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(118, 255, 3, 0.3);
+        }
+
+        .project-image {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+            background: #1a1a1a;
+        }
+
+        .project-info {
+            padding: 15px;
+        }
+
+        .project-title {
+            color: var(--sim-green);
+            font-weight: bold;
+            font-size: 1rem;
+            margin-bottom: 5px;
+        }
+
+        .project-category {
+            color: var(--sim-purple);
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+        }
+
+        .project-desc {
+            color: #999;
+            font-size: 0.85rem;
+            line-height: 1.4;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--sim-panel);
+            border: 3px solid var(--sim-green);
+            border-radius: 15px;
+            padding: 30px;
+            max-width: 600px;
+            max-height: 80vh;
+            overflow-y: auto;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateY(-50px);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            border-bottom: 2px solid var(--sim-green);
+            padding-bottom: 15px;
+        }
+
+        .modal-title {
+            color: var(--sim-green);
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            color: var(--sim-green);
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        .modal-image {
+            width: 100%;
+            height: 300px;
+            object-fit: cover;
+            border-radius: 10px;
+            margin-bottom: 15px;
+        }
+
+        .modal-category {
+            color: var(--sim-purple);
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            margin-bottom: 10px;
+        }
+
+        .modal-desc {
+            color: #ddd;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+
+        .modal-links {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .modal-link {
+            background: var(--sim-green);
+            color: #000;
+            padding: 8px 15px;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 0.9rem;
+            transition: opacity 0.2s;
+        }
+
+        .modal-link:hover {
+            opacity: 0.8;
+        }
+
+        /* Loading */
+        .loading {
+            text-align: center;
+            padding: 20px;
+        }
+
+        .spinner {
+            border: 3px solid #444;
+            border-top: 3px solid var(--sim-green);
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        @media (max-width: 900px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .left-panel {
+                border-right: none;
+                border-bottom: 2px solid #000;
+            }
+
+            .project-grid {
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            }
+        }
+
+        @media (max-width: 600px) {
+            .left-panel {
+                padding: 15px;
+            }
+
+            .right-panel {
+                padding: 20px;
+            }
+
+            .edu-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .project-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
     </style>
 </head>
+
 <body>
 
     <div class="container">
-        <!-- Left Panel: Simology -->
-        <div class="left-panel">
-            <div class="plumbob-container">
-                <div class="plumbob"></div>
-                <div class="plumbob-shadow"></div>
+        <div class="main-grid">
+            <!-- Left Panel: Simology -->
+            <div class="left-panel">
+                <div class="plumbob-container">
+                    <div class="plumbob"></div>
+                    <div class="plumbob-shadow"></div>
+                </div>
+
+                <div class="profile-pic-container">
+                    <img src="https://via.placeholder.com/150" alt="Sim Profile" class="profile-pic" id="sim-img">
+                </div>
+
+                <h1 class="sim-name" id="sim-name">Loading...</h1>
+                <div class="sim-title" id="sim-title">Loading...</div>
+
+                <!-- Traits -->
+                <div class="section-title">Traits (Sifat)</div>
+                <div class="traits-box" id="traits-container">
+                    <div class="loading">
+                        <div class="spinner"></div>
+                    </div>
+                </div>
+
+                <!-- Skills -->
+                <div class="section-title">Skills (Keahlian)</div>
+                <div id="skills-container">
+                    <div class="loading">
+                        <div class="spinner"></div>
+                    </div>
+                </div>
+
+                <!-- Contact -->
+                <div class="contact-info">
+                    <div class="contact-item" id="contact-email">📧 ...</div>
+                    <div class="contact-item" id="contact-phone">📱 ...</div>
+                    <div class="contact-item" id="contact-location">📍 ...</div>
+                    <div class="contact-item" id="contact-linkedin">🔗 ...</div>
+                </div>
             </div>
 
-            <div class="profile-pic-container">
-                <!-- Placeholder image, akan diganti oleh Firebase -->
-                <img src="https://via.placeholder.com/150" alt="Sim Profile" class="profile-pic" id="sim-img">
-            </div>
+            <!-- Right Panel: Career & Projects -->
+            <div class="right-panel">
 
-            <h1 class="sim-name" id="sim-name">Loading...</h1>
-            <div class="sim-title" id="sim-title">Loading...</div>
+                <!-- BIO -->
+                <div class="bio-section">
+                    <div class="section-title" style="background:var(--sim-green); color:#000;">Bio Data</div>
+                    <p class="bio-text" id="sim-bio">Memuat data dari Firebase...</p>
+                </div>
 
-            <!-- Traits -->
-            <div class="section-title">Traits (Sifat)</div>
-            <div class="traits-box" id="traits-container">
-                <!-- Traits akan di-generate JS di sini -->
-            </div>
+                <!-- EXPERIENCE -->
+                <div class="section-title">Career History</div>
+                <div id="jobs-container">
+                    <div class="loading">
+                        <div class="spinner"></div>
+                    </div>
+                </div>
 
-            <!-- Skills -->
-            <div class="section-title">Skills (Keahlian)</div>
-            <div id="skills-container">
-                <!-- Skills akan di-generate JS di sini -->
-            </div>
+                <!-- EDUCATION & ASPIRATIONS -->
+                <div class="section-title">Aspirations & Education</div>
+                <div class="edu-grid">
+                    <div class="edu-item">
+                        <strong id="edu-school">...</strong><br>
+                        <span id="edu-degree" style="color:var(--sim-blue)">...</span><br>
+                    </div>
+                    <div class="edu-item">
+                        <strong>Aspirasi Utama:</strong><br>
+                        <span id="edu-aspiration" style="color:var(--sim-green)">...</span><br>
+                    </div>
+                </div>
 
-            <!-- Contact -->
-            <div class="contact-info">
-                <div class="contact-item" id="contact-email">📧 ...</div>
-                <div class="contact-item" id="contact-phone">📱 ...</div>
-                <div class="contact-item" id="contact-location">📍 ...</div>
-                <div class="contact-item" id="contact-linkedin">🔗 ...</div>
+                <!-- PROJECTS -->
+                <div class="projects-section">
+                    <div class="section-title">Portfolio Projects</div>
+                    <div class="project-grid" id="projects-container">
+                        <div class="loading">
+                            <div class="spinner"></div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
+    </div>
 
-        <!-- Right Panel: Career -->
-        <div class="right-panel">
-            
-            <!-- BIO -->
-            <div class="bio-section">
-                <div class="section-title" style="background:var(--sim-green); color:#000;">Bio Data</div>
-                <p class="bio-text" id="sim-bio">Memuat data dari Firebase...</p>
+    <!-- Modal untuk Project Details -->
+    <div class="modal" id="projectModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title" id="modalTitle">Project Title</h2>
+                <button class="modal-close" onclick="closeModal()">&times;</button>
             </div>
-
-            <!-- EXPERIENCE -->
-            <div class="section-title">Career History</div>
-            <div id="jobs-container">
-                <!-- Jobs akan di-generate JS di sini -->
-            </div>
-
-            <!-- EDUCATION & ASPIRATIONS -->
-            <div class="section-title">Aspirations & Education</div>
-            <div class="edu-grid">
-                <div class="edu-item">
-                    <strong id="edu-school">...</strong><br>
-                    <span id="edu-degree" style="color:var(--sim-blue)">...</span><br>
-                </div>
-                <div class="edu-item">
-                    <strong>Aspirasi Utama:</strong><br>
-                    <span id="edu-aspiration" style="color:var(--sim-green)">...</span><br>
-                </div>
-            </div>
-
+            <img id="modalImage" src="" alt="Project" class="modal-image">
+            <div id="modalCategory" class="modal-category"></div>
+            <p id="modalDesc" class="modal-desc"></p>
+            <div id="modalLinks" class="modal-links"></div>
         </div>
     </div>
 
     <!-- FIREBASE CONFIGURATION & LOGIC -->
     <script type="module">
-        // Import Firebase SDK (Modular v9)
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
-        import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
+        import { getFirestore, doc, getDoc, collection, getDocs } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
 
-        // 1. PASTE KONFIGURASI FIREBASE ANDA DI SINI
         const firebaseConfig = {
-		  apiKey: "AIzaSyDxqQOEuFjIR2W9-lrtAjaYsqPMHa8-6X4",
-		  authDomain: "jimmy-27ea1.firebaseapp.com",
-		  databaseURL: "https://jimmy-27ea1.firebaseio.com",
-		  projectId: "jimmy-27ea1",
-		  storageBucket: "jimmy-27ea1.appspot.com",
-		  messagingSenderId: "1053115589398",
-		  appId: "1:1053115589398:web:f8f300891ea3c2d81be637",
-		  measurementId: "G-0VV0WP7VZ3"
-		};
+            apiKey: "AIzaSyDxqQOEuFjIR2W9-lrtAjaYsqPMHa8-6X4",
+            authDomain: "jimmy-27ea1.firebaseapp.com",
+            databaseURL: "https://jimmy-27ea1.firebaseio.com",
+            projectId: "jimmy-27ea1",
+            storageBucket: "jimmy-27ea1.appspot.com",
+            messagingSenderId: "1053115589398",
+            appId: "1:1053115589398:web:f8f300891ea3c2d81be637",
+            measurementId: "G-0VV0WP7VZ3"
+        };
 
-        // Initialize Firebase
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        // 2. FUNGSI UNTUK MENGAMBIL DATA
+        // Fetch CV Data
         async function fetchCVData() {
             try {
-                // Mengambil dokumen dari collection 'cv_data', dokumen 'main_profile'
                 const docRef = doc(db, "cv_data", "main_profile");
                 const docSnap = await getDoc(docRef);
 
                 if (docSnap.exists()) {
                     const data = docSnap.data();
                     populateUI(data);
+                    fetchProjects();
                 } else {
                     document.getElementById('sim-name').innerText = "Data Tidak Ditemukan";
                     console.log("No such document!");
@@ -210,28 +671,100 @@
             }
         }
 
-        // 3. FUNGSI UNTUK MENAMPILKAN DATA KE HTML
+        // Fetch Projects
+        async function fetchProjects() {
+            try {
+                const projectsRef = collection(db, "cv_data", "main_profile", "projects");
+                const projectsSnap = await getDocs(projectsRef);
+
+                const projectsContainer = document.getElementById('projects-container');
+                projectsContainer.innerHTML = '';
+
+                if (projectsSnap.empty) {
+                    projectsContainer.innerHTML = '<p style="color:#999;">No projects found</p>';
+                    return;
+                }
+
+                projectsSnap.forEach(doc => {
+                    const project = doc.data();
+                    const card = createProjectCard(project);
+                    projectsContainer.appendChild(card);
+                });
+            } catch (error) {
+                console.error("Error fetching projects: ", error);
+                document.getElementById('projects-container').innerHTML = '<p style="color:#f44336;">Error loading projects</p>';
+            }
+        }
+
+        function createProjectCard(project) {
+            const card = document.createElement('div');
+            card.className = 'project-card';
+            card.innerHTML = `
+                <img src="${project.image || 'https://via.placeholder.com/200x150'}" alt="${project.title}" class="project-image">
+                <div class="project-info">
+                    <div class="project-title">${project.title}</div>
+                    <div class="project-category">${project.category || 'Project'}</div>
+                    <div class="project-desc">${project.description.substring(0, 60)}...</div>
+                </div>
+            `;
+
+            card.addEventListener('click', () => openModal(project));
+            return card;
+        }
+
+        window.openModal = function (project) {
+            document.getElementById('modalTitle').innerText = project.title;
+            document.getElementById('modalImage').src = project.image || 'https://via.placeholder.com/600x300';
+            document.getElementById('modalCategory').innerText = project.category || 'Project';
+            document.getElementById('modalDesc').innerText = project.description;
+
+            const linksContainer = document.getElementById('modalLinks');
+            linksContainer.innerHTML = '';
+
+            if (project.links && Array.isArray(project.links)) {
+                project.links.forEach(link => {
+                    const a = document.createElement('a');
+                    a.href = link.url;
+                    a.target = '_blank';
+                    a.className = 'modal-link';
+                    a.innerText = link.label;
+                    linksContainer.appendChild(a);
+                });
+            }
+
+            document.getElementById('projectModal').classList.add('active');
+        };
+
+        window.closeModal = function () {
+            document.getElementById('projectModal').classList.remove('active');
+        };
+
+        window.addEventListener('click', function (event) {
+            const modal = document.getElementById('projectModal');
+            if (event.target === modal) {
+                modal.classList.remove('active');
+            }
+        });
+
+        // Populate Main UI
         function populateUI(data) {
-            // Basic Info
             document.getElementById('sim-name').innerText = data.name;
             document.getElementById('sim-title').innerText = data.title;
             document.getElementById('sim-bio').innerText = data.bio;
             document.getElementById('sim-img').src = data.image;
 
-            // Contact
             document.getElementById('contact-email').innerText = `📧 ${data.contact.email}`;
             document.getElementById('contact-phone').innerText = `📱 ${data.contact.phone}`;
             document.getElementById('contact-location').innerText = `📍 ${data.contact.location}`;
             document.getElementById('contact-linkedin').innerText = `🔗 ${data.contact.linkedin}`;
 
-            // Education
             document.getElementById('edu-school').innerText = data.education.school;
             document.getElementById('edu-degree').innerText = data.education.degree;
             document.getElementById('edu-aspiration').innerText = data.education.aspiration;
 
-            // Render Traits (Loop Array)
+            // Traits
             const traitsContainer = document.getElementById('traits-container');
-            traitsContainer.innerHTML = ''; // Clear loading
+            traitsContainer.innerHTML = '';
             data.traits.forEach(trait => {
                 const div = document.createElement('div');
                 div.className = 'trait';
@@ -239,7 +772,7 @@
                 traitsContainer.appendChild(div);
             });
 
-            // Render Skills (Loop Array)
+            // Skills
             const skillsContainer = document.getElementById('skills-container');
             skillsContainer.innerHTML = '';
             data.skills.forEach(skill => {
@@ -254,16 +787,13 @@
                 skillsContainer.appendChild(div);
             });
 
-            // Render Jobs (Loop Array)
+            // Jobs
             const jobsContainer = document.getElementById('jobs-container');
             jobsContainer.innerHTML = '';
             data.jobs.forEach(job => {
                 const card = document.createElement('div');
                 card.className = 'job-card';
-                
-                // Create list items string
                 const detailsHtml = job.details.map(item => `<li>${item}</li>`).join('');
-
                 card.innerHTML = `
                     <div class="job-header">
                         <div>
@@ -280,9 +810,10 @@
             });
         }
 
-        // Jalankan fungsi saat halaman dimuat
+        // Start loading
         fetchCVData();
     </script>
 
 </body>
+
 </html>
