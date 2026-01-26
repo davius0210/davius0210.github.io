@@ -5,25 +5,39 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard - The Sims CV</title>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;900&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap');
 
         :root {
             --sim-green: #76ff03;
             --sim-green-dark: #64dd17;
-            --sim-bg: #121212;
-            --sim-panel: #1e1e1e;
-            --sim-input: #2c2c2c;
-            --sim-text: #e0e0e0;
+            --sim-blue: #29b6f6;
+            --sim-purple: #d946ef;
+            --sim-bg: #0a0e27;
+            --sim-panel: #1a2240;
+            --sim-input: #232d4a;
+            --sim-text: #ffffff;
+            --sim-text-secondary: #b0b9c6;
             --danger: #ff5252;
+            --success: #4CAF50;
+            --warning: #ff9800;
+            --border-color: #3a4d6a;
+            --shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        * {
+            box-sizing: border-box;
         }
 
         body {
             font-family: 'Nunito', sans-serif;
-            background-color: var(--sim-bg);
+            background: linear-gradient(135deg, #0a0e27 0%, #16213e 100%);
             color: var(--sim-text);
             margin: 0;
             padding: 20px;
+            min-height: 100vh;
         }
 
         /* Header Bar */
@@ -31,176 +45,575 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 20px;
-            padding-bottom: 10px;
-            border-bottom: 1px solid #444;
+            margin-bottom: 30px;
+            padding: 15px 25px;
+            background: rgba(26, 34, 64, 0.9);
+            border-radius: 15px;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow);
+            backdrop-filter: blur(10px);
         }
 
         .user-info {
             color: var(--sim-green);
-            font-weight: bold;
+            font-weight: 800;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .user-info i {
+            font-size: 1.5rem;
         }
 
         .btn-logout {
-            background: #444;
+            background: linear-gradient(135deg, #ff5252, #ff6b6b);
             color: white;
             border: none;
-            padding: 5px 15px;
-            border-radius: 5px;
+            padding: 12px 25px;
+            border-radius: 10px;
             cursor: pointer;
+            font-weight: 700;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 15px rgba(255, 82, 82, 0.3);
         }
 
         .btn-logout:hover {
-            background: var(--danger);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 82, 82, 0.4);
         }
 
         .container {
-            max-width: 1200px;
+            max-width: 1400px;
             margin: 0 auto;
-            background: var(--sim-panel);
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5);
+            background: rgba(26, 34, 64, 0.85);
+            padding: 40px;
+            border-radius: 20px;
+            border: 1px solid var(--border-color);
+            box-shadow:
+                0 20px 60px rgba(0, 0, 0, 0.5),
+                0 0 30px rgba(118, 255, 3, 0.1);
+            backdrop-filter: blur(10px);
+            margin-bottom: 40px;
+        }
+
+        h1 {
+            text-align: center;
+            color: var(--sim-green);
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            font-weight: 900;
+            text-shadow: 0 0 15px rgba(118, 255, 3, 0.5);
+        }
+
+        .subtitle {
+            text-align: center;
+            color: var(--sim-text-secondary);
+            margin-bottom: 40px;
+            font-size: 1.1rem;
         }
 
         h2 {
-            border-bottom: 2px solid var(--sim-green);
-            padding-bottom: 10px;
-            margin-top: 30px;
+            border-bottom: 3px solid var(--sim-green);
+            padding-bottom: 12px;
+            margin-top: 40px;
+            margin-bottom: 25px;
             color: var(--sim-green);
+            font-size: 1.8rem;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
 
-        h2:first-child {
+        h2 i {
+            font-size: 1.5rem;
+        }
+
+        h2:first-of-type {
             margin-top: 0;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .section-count {
+            background: rgba(118, 255, 3, 0.2);
+            color: var(--sim-green);
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 0.9rem;
         }
 
         .form-grid {
             display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
         }
 
         .full-width {
-            grid-column: span 2;
+            grid-column: 1 / -1;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
         }
 
         label {
             display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
-            font-size: 0.9rem;
+            margin-bottom: 8px;
+            font-weight: 700;
+            font-size: 0.95rem;
+            color: var(--sim-text);
+        }
+
+        .label-with-icon {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 8px;
         }
 
         input,
-        textarea {
+        textarea,
+        select {
             width: 100%;
             background: var(--sim-input);
-            border: 1px solid #444;
-            color: white;
-            padding: 10px;
-            border-radius: 5px;
+            border: 2px solid var(--border-color);
+            color: var(--sim-text);
+            padding: 15px;
+            border-radius: 12px;
             box-sizing: border-box;
             font-family: inherit;
+            font-size: 1rem;
+            transition: all 0.3s ease;
         }
 
         input:focus,
-        textarea:focus {
+        textarea:focus,
+        select:focus {
             outline: none;
             border-color: var(--sim-green);
+            box-shadow: 0 0 0 3px rgba(118, 255, 3, 0.2);
         }
 
         textarea {
             resize: vertical;
-            min-height: 100px;
+            min-height: 120px;
+            line-height: 1.6;
+        }
+
+        input::placeholder,
+        textarea::placeholder {
+            color: #6b7a9f;
         }
 
         /* Dynamic Items Styling */
         .dynamic-list {
             margin-top: 15px;
+            margin-bottom: 30px;
         }
 
         .dynamic-item {
-            background: #252525;
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 10px;
-            border-left: 3px solid var(--sim-blue);
+            background: linear-gradient(135deg, rgba(35, 45, 74, 0.7) 0%, rgba(26, 34, 64, 0.5) 100%);
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            border: 2px solid var(--border-color);
+            border-left: 5px solid var(--sim-blue);
             position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .dynamic-item:hover {
+            border-color: var(--sim-green);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
         }
 
         /* Project Specific Styles */
         .project-item {
-            border-left-color: #ff9800;
+            border-left-color: var(--sim-purple);
         }
 
-        /* Orange for projects to distinguish */
+        /* Skill Specific Styles */
+        .skill-item {
+            border-left-color: var(--sim-green);
+        }
+
+        /* Trait Specific Styles */
+        .trait-item {
+            border-left-color: var(--warning);
+        }
+
+        /* Links Container */
         .links-container {
             background: rgba(0, 0, 0, 0.2);
-            padding: 10px;
-            border-radius: 5px;
-            margin-top: 10px;
-            border: 1px dashed #555;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 15px;
+            border: 1px dashed var(--border-color);
         }
 
         .link-row {
             display: flex;
-            gap: 10px;
-            margin-bottom: 5px;
+            gap: 15px;
+            margin-bottom: 15px;
+            align-items: center;
+        }
+
+        .link-row input {
+            flex: 1;
         }
 
         .btn {
-            background: var(--sim-green);
+            background: linear-gradient(135deg, var(--sim-green), var(--sim-green-dark));
             color: #000;
             border: none;
-            padding: 10px 20px;
-            border-radius: 5px;
+            padding: 14px 28px;
+            border-radius: 12px;
             cursor: pointer;
-            font-weight: bold;
-            margin-top: 10px;
-            display: inline-block;
+            font-weight: 800;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            box-shadow: 0 6px 20px rgba(118, 255, 3, 0.3);
         }
 
         .btn:hover {
-            background: var(--sim-green-dark);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(118, 255, 3, 0.5);
+        }
+
+        .btn:active {
+            transform: translateY(-1px);
         }
 
         .btn-small {
-            padding: 5px 10px;
-            font-size: 0.8rem;
-            margin-top: 5px;
+            padding: 8px 16px;
+            font-size: 0.85rem;
+            font-weight: 700;
+        }
+
+        .btn-add-link {
+            background: linear-gradient(135deg, var(--sim-blue), #2196F3);
+            color: white;
+        }
+
+        .btn-add-link:hover {
+            box-shadow: 0 10px 25px rgba(33, 150, 243, 0.4);
         }
 
         .btn-remove {
-            background: var(--danger);
+            background: linear-gradient(135deg, var(--danger), #ff6b6b);
             color: white;
             position: absolute;
-            top: 10px;
-            right: 10px;
+            top: 20px;
+            right: 20px;
             margin: 0;
+            padding: 8px 16px;
+            font-size: 0.85rem;
+            width: auto;
+            min-width: auto;
+        }
+
+        .btn-remove:hover {
+            box-shadow: 0 6px 15px rgba(255, 82, 82, 0.4);
         }
 
         .save-container {
             text-align: center;
-            margin-top: 40px;
-            padding-top: 20px;
-            border-top: 1px solid #444;
+            margin-top: 60px;
+            padding-top: 40px;
+            border-top: 2px solid var(--border-color);
         }
 
         .save-btn {
-            font-size: 1.2rem;
-            padding: 15px 40px;
+            font-size: 1.3rem;
+            padding: 18px 50px;
             width: 100%;
-            max-width: 300px;
+            max-width: 400px;
+            background: linear-gradient(135deg, var(--sim-green), var(--sim-green-dark), var(--sim-blue));
+            color: black;
+            font-weight: 900;
+            letter-spacing: 1px;
         }
 
-        @media (max-width: 768px) {
+        .save-btn:hover {
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: 0 15px 35px rgba(118, 255, 3, 0.5);
+        }
+
+        .save-btn:active {
+            transform: translateY(-2px);
+        }
+
+        .status-msg {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 10px;
+            font-weight: 700;
+            text-align: center;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .success {
+            background: rgba(76, 175, 80, 0.2);
+            color: #4CAF50;
+            border: 1px solid #4CAF50;
+        }
+
+        .error {
+            background: rgba(255, 82, 82, 0.2);
+            color: var(--danger);
+            border: 1px solid var(--danger);
+        }
+
+        .info {
+            background: rgba(33, 150, 243, 0.2);
+            color: #2196F3;
+            border: 1px solid #2196F3;
+        }
+
+        /* Form Controls */
+        .form-controls {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        /* Icon Selector */
+        .icon-selector {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(40px, 1fr));
+            gap: 10px;
+            margin-top: 10px;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .icon-option {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            background: var(--sim-input);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .icon-option:hover {
+            background: var(--sim-green);
+            color: black;
+            transform: scale(1.1);
+        }
+
+        .icon-option.selected {
+            background: var(--sim-green);
+            color: black;
+            transform: scale(1.1);
+        }
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .form-grid {
+                grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            }
+        }
+
+        @media (max-width: 992px) {
+            .container {
+                padding: 30px;
+            }
+
             .form-grid {
                 grid-template-columns: 1fr;
             }
 
-            .full-width {
-                grid-column: span 1;
+            h1 {
+                font-size: 2rem;
             }
+
+            h2 {
+                font-size: 1.5rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+
+            .container {
+                padding: 20px;
+            }
+
+            .top-bar {
+                flex-direction: column;
+                gap: 15px;
+                padding: 15px;
+            }
+
+            .link-row {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .btn-remove {
+                position: relative;
+                top: 0;
+                right: 0;
+                margin-top: 10px;
+                width: 100%;
+            }
+
+            .save-btn {
+                padding: 15px 30px;
+                font-size: 1.1rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 1.8rem;
+            }
+
+            h2 {
+                font-size: 1.3rem;
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 5px;
+            }
+
+            .form-controls {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+
+        /* Loading Animation */
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: var(--sim-text-secondary);
+        }
+
+        .spinner {
+            border: 4px solid rgba(58, 77, 106, 0.3);
+            border-top: 4px solid var(--sim-green);
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(26, 34, 64, 0.5);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--sim-green);
+            border-radius: 5px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--sim-green-dark);
+        }
+
+        /* Required Field Indicator */
+        .required::after {
+            content: " *";
+            color: var(--danger);
+        }
+
+        /* Tooltip */
+        .tooltip {
+            position: relative;
+            display: inline-block;
+            margin-left: 5px;
+            color: var(--sim-text-secondary);
+            cursor: help;
+        }
+
+        .tooltip .tooltiptext {
+            visibility: hidden;
+            width: 200px;
+            background-color: var(--sim-panel);
+            color: var(--sim-text);
+            text-align: center;
+            border-radius: 6px;
+            padding: 10px;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            margin-left: -100px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            font-size: 0.85rem;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow);
+        }
+
+        .tooltip:hover .tooltiptext {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        /* Counter Badge */
+        .counter-badge {
+            background: var(--sim-green);
+            color: black;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            font-weight: 900;
+            margin-left: 10px;
         }
     </style>
 </head>
@@ -215,65 +628,192 @@
     </script>
 
     <div class="top-bar">
-        <div class="user-info">Halo, <span id="display-username">Admin</span> 👋</div>
-        <button class="btn-logout" onclick="logout()">LOGOUT</button>
+        <div class="user-info">
+            <i class="fas fa-user-circle"></i>
+            <span id="display-username">Admin</span>
+        </div>
+        <button class="btn-logout" onclick="logout()">
+            <i class="fas fa-sign-out-alt"></i>
+            LOGOUT
+        </button>
     </div>
 
     <div class="container">
-        <h1 style="text-align: center; color: var(--sim-green);">The Sims CV - Dashboard Admin</h1>
-        <p style="text-align: center; color: #888;">Edit data di bawah ini, lalu klik Simpan.</p>
+        <h1><i class="fas fa-cogs"></i> The Sims CV - Admin Dashboard</h1>
+        <p class="subtitle">Edit semua data CV di sini. Pastikan semua data terisi dengan benar sebelum menyimpan.</p>
 
         <form id="cvForm" onsubmit="event.preventDefault();">
 
             <!-- SECTION 1: INFO DASAR -->
-            <h2>1. Identitas Sim</h2>
+            <div class="section-header">
+                <h2><i class="fas fa-user"></i> 1. Identitas Sim</h2>
+                <div class="section-count">Info Dasar</div>
+            </div>
             <div class="form-grid">
-                <div class="full-width"><label>Nama Lengkap</label><input type="text" id="name"></div>
-                <div><label>Job Title</label><input type="text" id="title"></div>
-                <div><label>URL Foto Profil</label><input type="text" id="image"></div>
-                <div class="full-width"><label>Bio Singkat</label><textarea id="bio"></textarea></div>
+                <div class="form-group">
+                    <label class="label-with-icon required">
+                        <i class="fas fa-id-card"></i> Nama Lengkap
+                    </label>
+                    <input type="text" id="name" placeholder="Masukkan nama lengkap" required>
+                </div>
+                <div class="form-group">
+                    <label class="label-with-icon required">
+                        <i class="fas fa-briefcase"></i> Job Title
+                    </label>
+                    <input type="text" id="title" placeholder="Contoh: Frontend Developer" required>
+                </div>
+                <div class="form-group full-width">
+                    <label class="label-with-icon">
+                        <i class="fas fa-image"></i> URL Foto Profil
+                    </label>
+                    <input type="text" id="image" placeholder="Masukkan URL gambar profil">
+                    <small style="color: var(--sim-text-secondary); margin-top: 5px; display: block;">
+                        Rekomendasi: Gunakan layanan seperti Imgur atau Cloudinary
+                    </small>
+                </div>
+                <div class="form-group full-width">
+                    <label class="label-with-icon required">
+                        <i class="fas fa-file-alt"></i> Bio Singkat
+                    </label>
+                    <textarea id="bio" placeholder="Tulis bio singkat tentang diri Anda..." required></textarea>
+                </div>
             </div>
 
             <!-- SECTION 2: CONTACT -->
-            <h2>2. Kontak</h2>
+            <div class="section-header">
+                <h2><i class="fas fa-address-book"></i> 2. Informasi Kontak</h2>
+                <div class="section-count">Kontak & Sosial Media</div>
+            </div>
             <div class="form-grid">
-                <div><label>Email</label><input type="text" id="c_email"></div>
-                <div><label>No HP</label><input type="text" id="c_phone"></div>
-                <div><label>Lokasi</label><input type="text" id="c_location"></div>
-                <div><label>LinkedIn</label><input type="text" id="c_linkedin"></div>
+                <div class="form-group">
+                    <label class="label-with-icon required">
+                        <i class="fas fa-envelope"></i> Email
+                    </label>
+                    <input type="email" id="c_email" placeholder="email@contoh.com" required>
+                </div>
+                <div class="form-group">
+                    <label class="label-with-icon">
+                        <i class="fas fa-phone"></i> No HP
+                    </label>
+                    <input type="tel" id="c_phone" placeholder="+62 812-3456-7890">
+                </div>
+                <div class="form-group">
+                    <label class="label-with-icon">
+                        <i class="fas fa-map-marker-alt"></i> Lokasi
+                    </label>
+                    <input type="text" id="c_location" placeholder="Jakarta, Indonesia">
+                </div>
+                <div class="form-group">
+                    <label class="label-with-icon">
+                        <i class="fab fa-linkedin"></i> LinkedIn
+                    </label>
+                    <input type="url" id="c_linkedin" placeholder="https://linkedin.com/in/username">
+                </div>
             </div>
 
             <!-- SECTION 3: TRAITS -->
-            <h2>3. Traits (Sifat)</h2>
-            <div class="dynamic-list" id="traits-list"></div>
-            <button type="button" class="btn" onclick="addTraitRow()">+ Tambah Trait</button>
+            <div class="section-header">
+                <h2><i class="fas fa-star"></i> 3. Traits (Sifat)</h2>
+                <div class="section-count" id="traits-count">0 Traits</div>
+            </div>
+            <div class="dynamic-list" id="traits-list">
+                <!-- Traits akan dimuat di sini -->
+                <div class="loading">
+                    <div class="spinner"></div>
+                    <p>Memuat traits...</p>
+                </div>
+            </div>
+            <button type="button" class="btn" onclick="addTraitRow()">
+                <i class="fas fa-plus"></i> Tambah Trait
+            </button>
 
             <!-- SECTION 4: SKILLS -->
-            <h2>4. Skills (Keahlian)</h2>
-            <div class="dynamic-list" id="skills-list"></div>
-            <button type="button" class="btn" onclick="addSkillRow()">+ Tambah Skill</button>
+            <div class="section-header">
+                <h2><i class="fas fa-code"></i> 4. Skills (Keahlian)</h2>
+                <div class="section-count" id="skills-count">0 Skills</div>
+            </div>
+            <div class="dynamic-list" id="skills-list">
+                <!-- Skills akan dimuat di sini -->
+                <div class="loading">
+                    <div class="spinner"></div>
+                    <p>Memuat skills...</p>
+                </div>
+            </div>
+            <button type="button" class="btn" onclick="addSkillRow()">
+                <i class="fas fa-plus"></i> Tambah Skill
+            </button>
 
             <!-- SECTION 5: JOBS -->
-            <h2>5. Riwayat Karir</h2>
-            <div class="dynamic-list" id="jobs-list"></div>
-            <button type="button" class="btn" onclick="addJobRow()">+ Tambah Pekerjaan</button>
+            <div class="section-header">
+                <h2><i class="fas fa-briefcase"></i> 5. Riwayat Karir</h2>
+                <div class="section-count" id="jobs-count">0 Pekerjaan</div>
+            </div>
+            <div class="dynamic-list" id="jobs-list">
+                <!-- Jobs akan dimuat di sini -->
+                <div class="loading">
+                    <div class="spinner"></div>
+                    <p>Memuat riwayat karir...</p>
+                </div>
+            </div>
+            <button type="button" class="btn" onclick="addJobRow()">
+                <i class="fas fa-plus"></i> Tambah Pekerjaan
+            </button>
 
-            <!-- SECTION 6: PROJECTS (NEW SECTION) -->
-            <h2>6. Projects Portfolio</h2>
-            <div class="dynamic-list" id="projects-list"></div>
-            <button type="button" class="btn" onclick="addProjectRow()">+ Tambah Project</button>
+            <!-- SECTION 6: PROJECTS -->
+            <div class="section-header">
+                <h2><i class="fas fa-project-diagram"></i> 6. Projects Portfolio</h2>
+                <div class="section-count" id="projects-count">0 Projects</div>
+            </div>
+            <div class="dynamic-list" id="projects-list">
+                <!-- Projects akan dimuat di sini -->
+                <div class="loading">
+                    <div class="spinner"></div>
+                    <p>Memuat projects...</p>
+                </div>
+            </div>
+            <button type="button" class="btn" onclick="addProjectRow()">
+                <i class="fas fa-plus"></i> Tambah Project
+            </button>
 
             <!-- SECTION 7: EDUCATION -->
-            <h2>7. Pendidikan & Aspirasi</h2>
+            <div class="section-header">
+                <h2><i class="fas fa-graduation-cap"></i> 7. Pendidikan & Aspirasi</h2>
+                <div class="section-count">Info Akademik</div>
+            </div>
             <div class="form-grid">
-                <div><label>Universitas / Sekolah</label><input type="text" id="edu_school"></div>
-                <div><label>Gelar / Degree</label><input type="text" id="edu_degree"></div>
-                <div class="full-width"><label>Aspirasi Utama</label><input type="text" id="edu_aspiration"></div>
+                <div class="form-group">
+                    <label class="label-with-icon">
+                        <i class="fas fa-university"></i> Universitas / Sekolah
+                    </label>
+                    <input type="text" id="edu_school" placeholder="Nama institusi pendidikan">
+                </div>
+                <div class="form-group">
+                    <label class="label-with-icon">
+                        <i class="fas fa-certificate"></i> Gelar / Degree
+                    </label>
+                    <input type="text" id="edu_degree" placeholder="Contoh: S.Kom, B.Sc">
+                </div>
+                <div class="form-group full-width">
+                    <label class="label-with-icon">
+                        <i class="fas fa-bullseye"></i> Aspirasi Utama
+                        <span class="tooltip">
+                            <i class="fas fa-question-circle"></i>
+                            <span class="tooltiptext">Tulis aspirasi atau tujuan karir utama</span>
+                        </span>
+                    </label>
+                    <input type="text" id="edu_aspiration" placeholder="Contoh: Menjadi Senior Developer">
+                </div>
             </div>
 
             <div class="save-container">
-                <button type="button" class="btn save-btn" onclick="saveData()">SIMPAN KE FIREBASE</button>
-                <div id="status-msg" style="margin-top: 10px; color: var(--sim-green);"></div>
+                <button type="button" class="btn save-btn" onclick="saveData()">
+                    <i class="fas fa-save"></i> SIMPAN KE FIREBASE
+                </button>
+                <div id="status-msg" class="status-msg"></div>
+                <p style="color: var(--sim-text-secondary); margin-top: 20px; font-size: 0.9rem;">
+                    <i class="fas fa-info-circle"></i> Data akan langsung tersimpan ke database dan dapat dilihat di
+                    halaman utama CV.
+                </p>
             </div>
         </form>
     </div>
@@ -297,257 +837,569 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
+        // Logout function
         window.logout = function () {
             localStorage.removeItem('isLoggedIn');
             localStorage.removeItem('userName');
             window.location.href = "login.html";
         }
+
+        // Set username if exists
         const userName = localStorage.getItem('userName');
-        if (userName) document.getElementById('display-username').innerText = userName;
+        if (userName) {
+            document.getElementById('display-username').innerText = userName;
+        }
 
-        // --- HELPER FUNCTIONS (Traits, Skills, Jobs) ---
-        window.addTraitRow = function (icon = "", label = "") {
+        // Common icons for traits
+        const commonIcons = [
+            '💡', '🚀', '🎯', '⭐', '🔥', '💪', '🧠', '❤️', '🤝', '📚',
+            '🎨', '🔧', '⚡', '🛡️', '🎭', '🧩', '✨', '🌟', '💫', '🎖️',
+            '🏆', '👑', '💼', '🎓', '📊', '🔍', '🎮', '🎵', '🎬', '📸'
+        ];
+
+        // Update counters
+        function updateCounters() {
+            const traitsCount = document.querySelectorAll('#traits-list .dynamic-item').length;
+            const skillsCount = document.querySelectorAll('#skills-list .dynamic-item').length;
+            const jobsCount = document.querySelectorAll('#jobs-list .dynamic-item').length;
+            const projectsCount = document.querySelectorAll('#projects-list .dynamic-item').length;
+
+            document.getElementById('traits-count').innerText = `${traitsCount} Traits`;
+            document.getElementById('skills-count').innerText = `${skillsCount} Skills`;
+            document.getElementById('jobs-count').innerText = `${jobsCount} Pekerjaan`;
+            document.getElementById('projects-count').innerText = `${projectsCount} Projects`;
+        }
+
+        // --- HELPER FUNCTIONS ---
+
+        // Add trait row (FIXED: Tidak otomatis menambah baris kosong)
+        window.addTraitRow = function (icon = "", label = "", isNew = false) {
             const container = document.getElementById('traits-list');
+            // Hapus loading indicator jika ada
+            if (container.querySelector('.loading')) {
+                container.innerHTML = '';
+            }
+
             const div = document.createElement('div');
-            div.className = 'dynamic-item';
+            div.className = 'dynamic-item trait-item';
             div.innerHTML = `
-            <button type="button" class="btn btn-remove" onclick="this.parentElement.remove()">Hapus</button>
-            <div class="form-grid">
-                <div><label>Icon</label><input type="text" class="in-icon" value="${icon}"></div>
-                <div><label>Nama Trait</label><input type="text" class="in-label" value="${label}"></div>
-            </div>
-        `;
+                <button type="button" class="btn btn-remove" onclick="removeItem(this)">
+                    <i class="fas fa-trash"></i> Hapus
+                </button>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label class="label-with-icon">
+                            <i class="fas fa-icons"></i> Icon
+                            <span class="tooltip">
+                                <i class="fas fa-question-circle"></i>
+                                <span class="tooltiptext">Pilih atau ketik emoji/icon</span>
+                            </span>
+                        </label>
+                        <div style="display: flex; gap: 10px;">
+                            <input type="text" class="in-icon" value="${icon}" placeholder="Emoji atau kode icon" style="flex: 1;">
+                            <button type="button" class="btn btn-small" onclick="showIconSelector(this)" style="min-width: 50px;">
+                                <i class="fas fa-palette"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="label-with-icon required">
+                            <i class="fas fa-tag"></i> Nama Trait
+                        </label>
+                        <input type="text" class="in-label" value="${label}" placeholder="Contoh: Kreatif, Teliti" required>
+                    </div>
+                </div>
+            `;
             container.appendChild(div);
+            updateCounters();
+
+            // Auto focus jika ini adalah baris baru
+            if (isNew) {
+                setTimeout(() => {
+                    div.querySelector('.in-label').focus();
+                }, 100);
+            }
         }
 
-        window.addSkillRow = function (name = "", level = 1) {
+        // Show icon selector
+        window.showIconSelector = function (button) {
+            const input = button.closest('.dynamic-item').querySelector('.in-icon');
+            const selector = document.createElement('div');
+            selector.className = 'icon-selector';
+
+            commonIcons.forEach(icon => {
+                const iconDiv = document.createElement('div');
+                iconDiv.className = 'icon-option';
+                iconDiv.textContent = icon;
+                iconDiv.onclick = () => {
+                    input.value = icon;
+                    selector.remove();
+                };
+                selector.appendChild(iconDiv);
+            });
+
+            // Insert after input
+            input.parentNode.insertBefore(selector, input.nextSibling);
+        }
+
+        // Add skill row (FIXED: Tidak otomatis menambah baris kosong)
+        window.addSkillRow = function (name = "", level = 5, isNew = false) {
             const container = document.getElementById('skills-list');
+            // Hapus loading indicator jika ada
+            if (container.querySelector('.loading')) {
+                container.innerHTML = '';
+            }
+
             const div = document.createElement('div');
-            div.className = 'dynamic-item';
+            div.className = 'dynamic-item skill-item';
             div.innerHTML = `
-            <button type="button" class="btn btn-remove" onclick="this.parentElement.remove()">Hapus</button>
-            <div class="form-grid">
-                <div><label>Nama Skill</label><input type="text" class="in-name" value="${name}"></div>
-                <div><label>Level (1-10)</label><input type="number" min="1" max="10" class="in-level" value="${level}"></div>
-            </div>
-        `;
+                <button type="button" class="btn btn-remove" onclick="removeItem(this)">
+                    <i class="fas fa-trash"></i> Hapus
+                </button>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label class="label-with-icon required">
+                            <i class="fas fa-code"></i> Nama Skill
+                        </label>
+                        <input type="text" class="in-name" value="${name}" placeholder="Contoh: JavaScript, React" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="label-with-icon required">
+                            <i class="fas fa-chart-line"></i> Level (1-10)
+                            <span class="counter-badge">${level}</span>
+                        </label>
+                        <div style="display: flex; align-items: center; gap: 15px;">
+                            <input type="range" class="in-level" min="1" max="10" value="${level}" 
+                                   style="flex: 1;" oninput="updateSkillLevel(this)">
+                            <span class="skill-level-display" style="font-weight: bold; color: var(--sim-green); min-width: 40px;">
+                                ${level}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            `;
             container.appendChild(div);
+            updateCounters();
+
+            // Auto focus jika ini adalah baris baru
+            if (isNew) {
+                setTimeout(() => {
+                    div.querySelector('.in-name').focus();
+                }, 100);
+            }
         }
 
-        window.addJobRow = function (role = "", company = "", date = "", detailsArr = []) {
+        // Update skill level display
+        window.updateSkillLevel = function (slider) {
+            const display = slider.parentElement.querySelector('.skill-level-display');
+            display.textContent = slider.value;
+
+            // Update badge
+            const badge = slider.closest('.form-group').querySelector('.counter-badge');
+            if (badge) {
+                badge.textContent = slider.value;
+            }
+        }
+
+        // Add job row (FIXED: Tidak otomatis menambah baris kosong)
+        window.addJobRow = function (role = "", company = "", date = "", detailsArr = [], isNew = false) {
             const container = document.getElementById('jobs-list');
+            // Hapus loading indicator jika ada
+            if (container.querySelector('.loading')) {
+                container.innerHTML = '';
+            }
+
             const detailsText = Array.isArray(detailsArr) ? detailsArr.join('\n') : "";
             const div = document.createElement('div');
             div.className = 'dynamic-item';
             div.innerHTML = `
-            <button type="button" class="btn btn-remove" onclick="this.parentElement.remove()">Hapus</button>
-            <div class="form-grid">
-                <div><label>Posisi</label><input type="text" class="in-role" value="${role}"></div>
-                <div><label>Perusahaan</label><input type="text" class="in-company" value="${company}"></div>
-                <div><label>Periode</label><input type="text" class="in-date" value="${date}"></div>
-                <div class="full-width">
-                    <label>Deskripsi (Pisahkan poin dengan Enter)</label>
-                    <textarea class="in-details">${detailsText}</textarea>
+                <button type="button" class="btn btn-remove" onclick="removeItem(this)">
+                    <i class="fas fa-trash"></i> Hapus
+                </button>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label class="label-with-icon required">
+                            <i class="fas fa-user-tie"></i> Posisi
+                        </label>
+                        <input type="text" class="in-role" value="${role}" placeholder="Contoh: Frontend Developer" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="label-with-icon required">
+                            <i class="fas fa-building"></i> Perusahaan
+                        </label>
+                        <input type="text" class="in-company" value="${company}" placeholder="Nama perusahaan" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="label-with-icon required">
+                            <i class="fas fa-calendar-alt"></i> Periode
+                        </label>
+                        <input type="text" class="in-date" value="${date}" placeholder="Contoh: Jan 2020 - Sekarang" required>
+                    </div>
+                    <div class="form-group full-width">
+                        <label class="label-with-icon">
+                            <i class="fas fa-list-ul"></i> Deskripsi Tugas
+                            <span class="tooltip">
+                                <i class="fas fa-question-circle"></i>
+                                <span class="tooltiptext">Pisahkan setiap poin dengan Enter</span>
+                            </span>
+                        </label>
+                        <textarea class="in-details" placeholder="Tulis deskripsi tugas, satu poin per baris...">${detailsText}</textarea>
+                    </div>
                 </div>
-            </div>
-        `;
+            `;
             container.appendChild(div);
+            updateCounters();
+
+            // Auto focus jika ini adalah baris baru
+            if (isNew) {
+                setTimeout(() => {
+                    div.querySelector('.in-role').focus();
+                }, 100);
+            }
         }
 
-        // --- NEW: PROJECT FUNCTIONS ---
+        // Remove item
+        window.removeItem = function (button) {
+            const item = button.closest('.dynamic-item');
+            if (confirm('Apakah Anda yakin ingin menghapus item ini?')) {
+                item.remove();
+                updateCounters();
+            }
+        }
 
-        // Fungsi untuk menambah baris Link di dalam sebuah Project
+        // --- PROJECT FUNCTIONS ---
+
+        // Add link row
         window.addLinkRow = function (btnElement) {
-            // Cari container link terdekat dari tombol yang diklik
             const container = btnElement.parentElement.querySelector('.links-container');
             const div = document.createElement('div');
             div.className = 'link-row';
             div.innerHTML = `
-            <input type="text" placeholder="Label (misal: Demo)" class="in-link-label">
-            <input type="text" placeholder="URL Link" class="in-link-url">
-        `;
+                <input type="text" class="in-link-label" placeholder="Label (misal: Demo, GitHub, Live)" value="">
+                <input type="url" class="in-link-url" placeholder="https://contoh.com" value="">
+                <button type="button" class="btn btn-remove btn-small" onclick="this.parentElement.remove()" style="min-width: 40px;">
+                    <i class="fas fa-times"></i>
+                </button>
+            `;
             container.appendChild(div);
+            div.querySelector('.in-link-label').focus();
         }
 
-        // Fungsi untuk menambahkan Project Card Baru
-        window.addProjectRow = function (title = "", category = "", description = "", image = "", linksArr = []) {
+        // Add project row (FIXED: Tidak otomatis menambah baris kosong)
+        window.addProjectRow = function (title = "", category = "", description = "", image = "", linksArr = [], isNew = false) {
             const container = document.getElementById('projects-list');
-            const div = document.createElement('div');
-            div.className = 'dynamic-item project-item';
+            // Hapus loading indicator jika ada
+            if (container.querySelector('.loading')) {
+                container.innerHTML = '';
+            }
 
-            // Generate existing links HTML if loading data
+            // Generate existing links HTML
             let linksHtml = '';
             if (linksArr && linksArr.length > 0) {
                 linksArr.forEach(link => {
                     linksHtml += `
                     <div class="link-row">
-                        <input type="text" placeholder="Label" class="in-link-label" value="${link.label}">
-                        <input type="text" placeholder="URL" class="in-link-url" value="${link.url}">
+                        <input type="text" class="in-link-label" placeholder="Label" value="${link.label || ''}">
+                        <input type="url" class="in-link-url" placeholder="URL" value="${link.url || ''}">
+                        <button type="button" class="btn btn-remove btn-small" onclick="this.parentElement.remove()" style="min-width: 40px;">
+                            <i class="fas fa-times"></i>
+                        </button>
                     </div>
                 `;
                 });
+            } else {
+                linksHtml = `
+                    <div class="link-row">
+                        <input type="text" class="in-link-label" placeholder="Label (misal: Demo)" value="">
+                        <input type="url" class="in-link-url" placeholder="https://contoh.com" value="">
+                        <button type="button" class="btn btn-remove btn-small" onclick="this.parentElement.remove()" style="min-width: 40px;">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                `;
             }
 
+            const div = document.createElement('div');
+            div.className = 'dynamic-item project-item';
             div.innerHTML = `
-            <button type="button" class="btn btn-remove" onclick="this.parentElement.remove()">Hapus</button>
-            <div class="form-grid">
-                <div><label>Project Title</label><input type="text" class="in-p-title" value="${title}"></div>
-                <div><label>Category</label><input type="text" class="in-p-category" value="${category}"></div>
-                <div class="full-width"><label>Image URL</label><input type="text" class="in-p-image" value="${image}"></div>
-                <div class="full-width">
-                    <label>Description</label>
-                    <textarea class="in-p-desc">${description}</textarea>
+                <button type="button" class="btn btn-remove" onclick="removeItem(this)">
+                    <i class="fas fa-trash"></i> Hapus
+                </button>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label class="label-with-icon required">
+                            <i class="fas fa-heading"></i> Project Title
+                        </label>
+                        <input type="text" class="in-p-title" value="${title}" placeholder="Nama project" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="label-with-icon">
+                            <i class="fas fa-tags"></i> Category
+                        </label>
+                        <input type="text" class="in-p-category" value="${category}" placeholder="Contoh: Web App, Mobile">
+                    </div>
+                    <div class="form-group full-width">
+                        <label class="label-with-icon">
+                            <i class="fas fa-image"></i> Image URL
+                        </label>
+                        <input type="url" class="in-p-image" value="${image}" placeholder="https://contoh.com/gambar.jpg">
+                    </div>
+                    <div class="form-group full-width">
+                        <label class="label-with-icon required">
+                            <i class="fas fa-align-left"></i> Description
+                        </label>
+                        <textarea class="in-p-desc" placeholder="Deskripsi lengkap tentang project..." required>${description}</textarea>
+                    </div>
                 </div>
-            </div>
-            
-            <label style="margin-top:10px; color:#aaa; font-size:0.8rem;">Links (Demo, GitHub, etc):</label>
-            <div class="links-container">
-                ${linksHtml}
-            </div>
-            <button type="button" class="btn btn-small" onclick="addLinkRow(this)">+ Tambah Link</button>
-        `;
+                
+                <div style="margin-top: 20px;">
+                    <label class="label-with-icon">
+                        <i class="fas fa-link"></i> Links (Demo, GitHub, etc)
+                    </label>
+                    <div class="links-container">
+                        ${linksHtml}
+                    </div>
+                    <button type="button" class="btn btn-small btn-add-link" onclick="addLinkRow(this)" style="margin-top: 10px;">
+                        <i class="fas fa-plus"></i> Tambah Link
+                    </button>
+                </div>
+            `;
             container.appendChild(div);
+            updateCounters();
+
+            // Auto focus jika ini adalah baris baru
+            if (isNew) {
+                setTimeout(() => {
+                    div.querySelector('.in-p-title').focus();
+                }, 100);
+            }
         }
 
-        // --- LOAD DATA ---
+        // --- LOAD DATA (FIXED: Tidak menambah baris kosong otomatis) ---
         async function loadData() {
             const docRef = doc(db, "cv_data", "main_profile");
             const docSnap = await getDoc(docRef);
 
+            // Reset loading indicators
+            ['traits-list', 'skills-list', 'jobs-list', 'projects-list'].forEach(id => {
+                const container = document.getElementById(id);
+                if (container.querySelector('.loading')) {
+                    container.innerHTML = '';
+                }
+            });
+
             if (docSnap.exists()) {
                 const data = docSnap.data();
+
+                // Basic info
                 document.getElementById('name').value = data.name || "";
                 document.getElementById('title').value = data.title || "";
                 document.getElementById('image').value = data.image || "";
                 document.getElementById('bio').value = data.bio || "";
 
+                // Contact info
                 if (data.contact) {
                     document.getElementById('c_email').value = data.contact.email || "";
                     document.getElementById('c_phone').value = data.contact.phone || "";
                     document.getElementById('c_location').value = data.contact.location || "";
                     document.getElementById('c_linkedin').value = data.contact.linkedin || "";
                 }
+
+                // Education
                 if (data.education) {
                     document.getElementById('edu_school').value = data.education.school || "";
                     document.getElementById('edu_degree').value = data.education.degree || "";
                     document.getElementById('edu_aspiration').value = data.education.aspiration || "";
                 }
 
-                // Load Lists
-                document.getElementById('traits-list').innerHTML = '';
-                if (data.traits) data.traits.forEach(t => addTraitRow(t.icon, t.label));
+                // Load Traits (HANYA jika ada data)
+                if (data.traits && data.traits.length > 0) {
+                    data.traits.forEach(t => addTraitRow(t.icon, t.label, false));
+                }
 
-                document.getElementById('skills-list').innerHTML = '';
-                if (data.skills) data.skills.forEach(s => addSkillRow(s.name, s.level));
+                // Load Skills (HANYA jika ada data)
+                if (data.skills && data.skills.length > 0) {
+                    data.skills.forEach(s => addSkillRow(s.name, s.level || 5, false));
+                }
 
-                document.getElementById('jobs-list').innerHTML = '';
-                if (data.jobs) data.jobs.forEach(j => addJobRow(j.role, j.company, j.date, j.details));
+                // Load Jobs (HANYA jika ada data)
+                if (data.jobs && data.jobs.length > 0) {
+                    data.jobs.forEach(j => addJobRow(j.role, j.company, j.date, j.details, false));
+                }
 
-                // Load NEW Projects
-                document.getElementById('projects-list').innerHTML = '';
-                if (data.projects) {
+                // Load Projects (HANYA jika ada data)
+                if (data.projects && data.projects.length > 0) {
                     data.projects.forEach(p => {
-                        addProjectRow(p.title, p.category, p.description, p.image, p.links);
+                        addProjectRow(p.title, p.category, p.description, p.image, p.links, false);
                     });
                 }
-            }
-            // Add empty defaults if needed
-            if (document.getElementById('projects-list').innerHTML === '') {
-                addProjectRow();
+
+                // Update counters after loading
+                updateCounters();
+
+                // Show success message
+                showStatus('Data berhasil dimuat dari Firebase!', 'success');
+            } else {
+                showStatus('Data tidak ditemukan. Silakan isi form di bawah.', 'info');
             }
         }
 
         // --- SAVE DATA ---
         window.saveData = async function () {
             const statusMsg = document.getElementById('status-msg');
-            statusMsg.innerText = "Menyimpan...";
+
+            // Validasi form
+            const name = document.getElementById('name').value.trim();
+            const title = document.getElementById('title').value.trim();
+            const bio = document.getElementById('bio').value.trim();
+            const email = document.getElementById('c_email').value.trim();
+
+            if (!name || !title || !bio || !email) {
+                showStatus('Harap isi semua field yang wajib diisi!', 'error');
+                return;
+            }
+
+            showStatus("Menyimpan data ke Firebase...", 'info');
 
             const newData = {
-                name: document.getElementById('name').value,
-                title: document.getElementById('title').value,
-                image: document.getElementById('image').value,
-                bio: document.getElementById('bio').value,
+                name: name,
+                title: title,
+                image: document.getElementById('image').value.trim() || "https://via.placeholder.com/200",
+                bio: bio,
                 contact: {
-                    email: document.getElementById('c_email').value,
-                    phone: document.getElementById('c_phone').value,
-                    location: document.getElementById('c_location').value,
-                    linkedin: document.getElementById('c_linkedin').value
+                    email: email,
+                    phone: document.getElementById('c_phone').value.trim() || "",
+                    location: document.getElementById('c_location').value.trim() || "",
+                    linkedin: document.getElementById('c_linkedin').value.trim() || ""
                 },
                 education: {
-                    school: document.getElementById('edu_school').value,
-                    degree: document.getElementById('edu_degree').value,
-                    aspiration: document.getElementById('edu_aspiration').value
+                    school: document.getElementById('edu_school').value.trim() || "",
+                    degree: document.getElementById('edu_degree').value.trim() || "",
+                    aspiration: document.getElementById('edu_aspiration').value.trim() || ""
                 }
             };
 
-            // Get Traits
+            // Get Traits (filter yang valid)
             newData.traits = [];
             document.querySelectorAll('#traits-list .dynamic-item').forEach(item => {
-                newData.traits.push({
-                    icon: item.querySelector('.in-icon').value,
-                    label: item.querySelector('.in-label').value
-                });
+                const icon = item.querySelector('.in-icon').value.trim();
+                const label = item.querySelector('.in-label').value.trim();
+                if (label) { // Hanya simpan jika ada label
+                    newData.traits.push({ icon, label });
+                }
             });
 
-            // Get Skills
+            // Get Skills (filter yang valid)
             newData.skills = [];
             document.querySelectorAll('#skills-list .dynamic-item').forEach(item => {
-                let lvl = parseInt(item.querySelector('.in-level').value) || 1;
-                newData.skills.push({
-                    name: item.querySelector('.in-name').value,
-                    level: lvl,
-                    percentage: lvl * 10
-                });
+                const name = item.querySelector('.in-name').value.trim();
+                const level = parseInt(item.querySelector('.in-level').value) || 5;
+                if (name) { // Hanya simpan jika ada nama skill
+                    newData.skills.push({
+                        name: name,
+                        level: level,
+                        percentage: level * 10
+                    });
+                }
             });
 
-            // Get Jobs
+            // Get Jobs (filter yang valid)
             newData.jobs = [];
             document.querySelectorAll('#jobs-list .dynamic-item').forEach(item => {
+                const role = item.querySelector('.in-role').value.trim();
+                const company = item.querySelector('.in-company').value.trim();
+                const date = item.querySelector('.in-date').value.trim();
                 const detailsRaw = item.querySelector('.in-details').value;
                 const detailsArr = detailsRaw.split('\n').filter(line => line.trim() !== "");
-                newData.jobs.push({
-                    role: item.querySelector('.in-role').value,
-                    company: item.querySelector('.in-company').value,
-                    date: item.querySelector('.in-date').value,
-                    details: detailsArr
-                });
+
+                if (role && company) { // Hanya simpan jika ada role dan company
+                    newData.jobs.push({
+                        role: role,
+                        company: company,
+                        date: date || "Sekarang",
+                        details: detailsArr
+                    });
+                }
             });
 
-            // --- NEW: Get Projects ---
+            // Get Projects (filter yang valid)
             newData.projects = [];
             document.querySelectorAll('.project-item').forEach(item => {
-                // Get nested links
+                const title = item.querySelector('.in-p-title').value.trim();
+                const category = item.querySelector('.in-p-category').value.trim();
+                const description = item.querySelector('.in-p-desc').value.trim();
+                const image = item.querySelector('.in-p-image').value.trim();
+
+                // Get links
                 const linksArr = [];
                 item.querySelectorAll('.link-row').forEach(lRow => {
-                    const label = lRow.querySelector('.in-link-label').value;
-                    const url = lRow.querySelector('.in-link-url').value;
+                    const label = lRow.querySelector('.in-link-label').value.trim();
+                    const url = lRow.querySelector('.in-link-url').value.trim();
                     if (label && url) {
                         linksArr.push({ label, url });
                     }
                 });
 
-                newData.projects.push({
-                    title: item.querySelector('.in-p-title').value,
-                    category: item.querySelector('.in-p-category').value,
-                    image: item.querySelector('.in-p-image').value,
-                    description: item.querySelector('.in-p-desc').value,
-                    links: linksArr
-                });
+                if (title && description) { // Hanya simpan jika ada title dan description
+                    newData.projects.push({
+                        title: title,
+                        category: category || "Project",
+                        image: image || "https://via.placeholder.com/600x400",
+                        description: description,
+                        links: linksArr
+                    });
+                }
             });
 
             try {
                 await setDoc(doc(db, "cv_data", "main_profile"), newData);
-                statusMsg.innerText = "Berhasil Disimpan! ✅";
-                statusMsg.style.color = "var(--sim-green)";
-                setTimeout(() => statusMsg.innerText = "", 3000);
+                showStatus("Data berhasil disimpan! ✅", 'success');
+
+                // Update counters
+                updateCounters();
+
+                // Auto-hide success message after 5 seconds
+                setTimeout(() => {
+                    const msg = document.getElementById('status-msg');
+                    if (msg.classList.contains('success')) {
+                        msg.className = 'status-msg';
+                        msg.textContent = '';
+                    }
+                }, 5000);
+
             } catch (error) {
-                console.error(error);
-                statusMsg.innerText = "Gagal: " + error.message;
-                statusMsg.style.color = "var(--danger)";
+                console.error("Error saving data:", error);
+                showStatus("Gagal menyimpan: " + error.message, 'error');
             }
         }
 
-        loadData();
+        // Show status message
+        function showStatus(message, type) {
+            const statusMsg = document.getElementById('status-msg');
+            statusMsg.textContent = message;
+            statusMsg.className = 'status-msg ' + type;
+
+            // Auto scroll to status message
+            statusMsg.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', function () {
+            // Set focus to first field
+            document.getElementById('name').focus();
+
+            // Load data from Firebase
+            loadData();
+
+            // Update counters initially
+            updateCounters();
+
+            // Add event listener for form submission
+            document.getElementById('cvForm').addEventListener('submit', function (e) {
+                e.preventDefault();
+                saveData();
+            });
+        });
     </script>
 
 </body>
