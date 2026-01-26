@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CV - The Sims Style (Firebase)</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;900&display=swap');
+
+        :root {
+            --sim-green: #76ff03;
+            --sim-green-dark: #64dd17;
+            --sim-blue: #29b6f6;
+            --sim-bg: #1a1a1a;
+            --sim-panel: #2d2d2d;
+            --sim-text: #ffffff;
+            --bar-bg: #424242;
+        }
+
+        body {
+            font-family: 'Nunito', sans-serif;
+            background-color: #0d0d0d;
+            background-image: radial-gradient(#333 1px, transparent 1px);
+            background-size: 20px 20px;
+            color: var(--sim-text);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1000px;
+            background: var(--sim-bg);
+            border: 4px solid var(--sim-panel);
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            display: grid;
+            grid-template-columns: 350px 1fr;
+            overflow: hidden;
+        }
+
+        /* Left Panel */
+        .left-panel {
+            background: var(--sim-panel);
+            padding: 20px;
+            border-right: 2px solid #000;
+            position: relative;
+        }
+
+        .plumbob-container { height: 60px; display: flex; justify-content: center; align-items: center; margin-bottom: -20px; z-index: 10; position: relative; }
+        .plumbob { width: 30px; height: 30px; background: var(--sim-green); clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%); position: absolute; animation: float 2s infinite ease-in-out; }
+        .plumbob-shadow { width: 30px; height: 15px; background: rgba(0,0,0,0.3); border-radius: 50%; position: absolute; bottom: -10px; animation: shadow 2s infinite ease-in-out; }
+
+        @keyframes float { 0%, 100% { transform: translateY(0) rotate(0deg); } 50% { transform: translateY(-10px) rotate(5deg); } }
+        @keyframes shadow { 0%, 100% { transform: scale(1); opacity: 0.3; } 50% { transform: scale(0.8); opacity: 0.1; } }
+
+        .profile-pic-container { width: 150px; height: 150px; background: #000; border: 4px solid var(--sim-green); border-radius: 10px; margin: 40px auto 20px; overflow: hidden; position: relative; }
+        .profile-pic { width: 100%; height: 100%; object-fit: cover; }
+
+        .sim-name { text-align: center; font-size: 1.8rem; font-weight: 900; margin-bottom: 5px; text-shadow: 2px 2px 0px #000; }
+        .sim-title { text-align: center; color: var(--sim-blue); font-weight: 700; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 1px; }
+
+        .section-title { background: #1f1f1f; color: var(--sim-green); padding: 8px 15px; border-radius: 20px; font-weight: bold; text-transform: uppercase; font-size: 0.9rem; margin: 25px 0 15px; border: 1px solid #444; display: inline-block; }
+
+        .trait { display: flex; align-items: center; margin-bottom: 8px; font-size: 0.9rem; }
+        .trait-icon { width: 25px; height: 25px; background: var(--sim-blue); border-radius: 50%; margin-right: 10px; display: flex; justify-content: center; align-items: center; font-size: 0.7rem; color: #000; font-weight: bold; }
+
+        /* Skills Bars */
+        .skill-container { margin-bottom: 12px; }
+        .skill-name { display: flex; justify-content: space-between; font-size: 0.85rem; margin-bottom: 4px; }
+        .progress-bar-bg { height: 12px; background: var(--bar-bg); border-radius: 6px; border: 1px solid #000; overflow: hidden; }
+        .progress-bar-fill { height: 100%; background: linear-gradient(to bottom, var(--sim-green), var(--sim-green-dark)); width: 0%; transition: width 1s ease-out; position: relative; }
+
+        .contact-info { margin-top: 30px; text-align: center; font-size: 0.9rem; }
+        .contact-item { margin-bottom: 8px; color: #ccc; }
+
+        /* Right Panel */
+        .right-panel { padding: 30px; background: #222; }
+        .bio-section { margin-bottom: 30px; border-left: 3px solid var(--sim-green); padding-left: 15px; }
+        .bio-text { line-height: 1.6; color: #ddd; }
+
+        .job-card { background: #2a2a2a; border: 1px solid #444; border-radius: 10px; padding: 20px; margin-bottom: 20px; position: relative; transition: transform 0.2s; }
+        .job-card:hover { transform: scale(1.01); border-color: var(--sim-green); }
+        .job-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; border-bottom: 1px solid #444; padding-bottom: 10px; }
+        .job-role { color: var(--sim-green); font-weight: bold; font-size: 1.1rem; }
+        .job-company { color: var(--sim-blue); font-size: 0.9rem; }
+        .job-date { background: #000; padding: 3px 8px; border-radius: 4px; font-size: 0.8rem; color: #aaa; }
+        .job-details ul { margin: 0; padding-left: 20px; color: #ccc; }
+        .job-details li { margin-bottom: 5px; }
+
+        .edu-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .edu-item { background: rgba(255,255,255,0.05); padding: 10px; border-radius: 8px; }
+
+        @media (max-width: 800px) { .container { grid-template-columns: 1fr; } .left-panel { border-right: none; border-bottom: 2px solid #000; } }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- Left Panel: Simology -->
+        <div class="left-panel">
+            <div class="plumbob-container">
+                <div class="plumbob"></div>
+                <div class="plumbob-shadow"></div>
+            </div>
+
+            <div class="profile-pic-container">
+                <!-- Placeholder image, akan diganti oleh Firebase -->
+                <img src="https://via.placeholder.com/150" alt="Sim Profile" class="profile-pic" id="sim-img">
+            </div>
+
+            <h1 class="sim-name" id="sim-name">Loading...</h1>
+            <div class="sim-title" id="sim-title">Loading...</div>
+
+            <!-- Traits -->
+            <div class="section-title">Traits (Sifat)</div>
+            <div class="traits-box" id="traits-container">
+                <!-- Traits akan di-generate JS di sini -->
+            </div>
+
+            <!-- Skills -->
+            <div class="section-title">Skills (Keahlian)</div>
+            <div id="skills-container">
+                <!-- Skills akan di-generate JS di sini -->
+            </div>
+
+            <!-- Contact -->
+            <div class="contact-info">
+                <div class="contact-item" id="contact-email">📧 ...</div>
+                <div class="contact-item" id="contact-phone">📱 ...</div>
+                <div class="contact-item" id="contact-location">📍 ...</div>
+                <div class="contact-item" id="contact-linkedin">🔗 ...</div>
+            </div>
+        </div>
+
+        <!-- Right Panel: Career -->
+        <div class="right-panel">
+            
+            <!-- BIO -->
+            <div class="bio-section">
+                <div class="section-title" style="background:var(--sim-green); color:#000;">Bio Data</div>
+                <p class="bio-text" id="sim-bio">Memuat data dari Firebase...</p>
+            </div>
+
+            <!-- EXPERIENCE -->
+            <div class="section-title">Career History</div>
+            <div id="jobs-container">
+                <!-- Jobs akan di-generate JS di sini -->
+            </div>
+
+            <!-- EDUCATION & ASPIRATIONS -->
+            <div class="section-title">Aspirations & Education</div>
+            <div class="edu-grid">
+                <div class="edu-item">
+                    <strong id="edu-school">...</strong><br>
+                    <span id="edu-degree" style="color:var(--sim-blue)">...</span><br>
+                </div>
+                <div class="edu-item">
+                    <strong>Aspirasi Utama:</strong><br>
+                    <span id="edu-aspiration" style="color:var(--sim-green)">...</span><br>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- FIREBASE CONFIGURATION & LOGIC -->
+    <script type="module">
+        // Import Firebase SDK (Modular v9)
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
+        import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
+
+        // 1. PASTE KONFIGURASI FIREBASE ANDA DI SINI
+        const firebaseConfig = {
+		  apiKey: "AIzaSyDxqQOEuFjIR2W9-lrtAjaYsqPMHa8-6X4",
+		  authDomain: "jimmy-27ea1.firebaseapp.com",
+		  databaseURL: "https://jimmy-27ea1.firebaseio.com",
+		  projectId: "jimmy-27ea1",
+		  storageBucket: "jimmy-27ea1.appspot.com",
+		  messagingSenderId: "1053115589398",
+		  appId: "1:1053115589398:web:f8f300891ea3c2d81be637",
+		  measurementId: "G-0VV0WP7VZ3"
+		};
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // 2. FUNGSI UNTUK MENGAMBIL DATA
+        async function fetchCVData() {
+            try {
+                // Mengambil dokumen dari collection 'cv_data', dokumen 'main_profile'
+                const docRef = doc(db, "cv_data", "main_profile");
+                const docSnap = await getDoc(docRef);
+
+                if (docSnap.exists()) {
+                    const data = docSnap.data();
+                    populateUI(data);
+                } else {
+                    document.getElementById('sim-name').innerText = "Data Tidak Ditemukan";
+                    console.log("No such document!");
+                }
+            } catch (error) {
+                console.error("Error fetching data: ", error);
+                document.getElementById('sim-name').innerText = "Error Koneksi Database";
+            }
+        }
+
+        // 3. FUNGSI UNTUK MENAMPILKAN DATA KE HTML
+        function populateUI(data) {
+            // Basic Info
+            document.getElementById('sim-name').innerText = data.name;
+            document.getElementById('sim-title').innerText = data.title;
+            document.getElementById('sim-bio').innerText = data.bio;
+            document.getElementById('sim-img').src = data.image;
+
+            // Contact
+            document.getElementById('contact-email').innerText = `📧 ${data.contact.email}`;
+            document.getElementById('contact-phone').innerText = `📱 ${data.contact.phone}`;
+            document.getElementById('contact-location').innerText = `📍 ${data.contact.location}`;
+            document.getElementById('contact-linkedin').innerText = `🔗 ${data.contact.linkedin}`;
+
+            // Education
+            document.getElementById('edu-school').innerText = data.education.school;
+            document.getElementById('edu-degree').innerText = data.education.degree;
+            document.getElementById('edu-aspiration').innerText = data.education.aspiration;
+
+            // Render Traits (Loop Array)
+            const traitsContainer = document.getElementById('traits-container');
+            traitsContainer.innerHTML = ''; // Clear loading
+            data.traits.forEach(trait => {
+                const div = document.createElement('div');
+                div.className = 'trait';
+                div.innerHTML = `<div class="trait-icon">${trait.icon}</div><div>${trait.label}</div>`;
+                traitsContainer.appendChild(div);
+            });
+
+            // Render Skills (Loop Array)
+            const skillsContainer = document.getElementById('skills-container');
+            skillsContainer.innerHTML = '';
+            data.skills.forEach(skill => {
+                const div = document.createElement('div');
+                div.className = 'skill-container';
+                div.innerHTML = `
+                    <div class="skill-name"><span>${skill.name}</span><span>Level ${skill.level}</span></div>
+                    <div class="progress-bar-bg">
+                        <div class="progress-bar-fill" style="width: ${skill.percentage}%"></div>
+                    </div>
+                `;
+                skillsContainer.appendChild(div);
+            });
+
+            // Render Jobs (Loop Array)
+            const jobsContainer = document.getElementById('jobs-container');
+            jobsContainer.innerHTML = '';
+            data.jobs.forEach(job => {
+                const card = document.createElement('div');
+                card.className = 'job-card';
+                
+                // Create list items string
+                const detailsHtml = job.details.map(item => `<li>${item}</li>`).join('');
+
+                card.innerHTML = `
+                    <div class="job-header">
+                        <div>
+                            <div class="job-role">${job.role}</div>
+                            <div class="job-company">${job.company}</div>
+                        </div>
+                        <div class="job-date">${job.date}</div>
+                    </div>
+                    <div class="job-details">
+                        <ul>${detailsHtml}</ul>
+                    </div>
+                `;
+                jobsContainer.appendChild(card);
+            });
+        }
+
+        // Jalankan fungsi saat halaman dimuat
+        fetchCVData();
+    </script>
+
+</body>
+</html>
