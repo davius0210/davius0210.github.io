@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CMS Admin Dashboard</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.snow.css" rel="stylesheet">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap');
         :root {
@@ -350,6 +351,27 @@
         }
         .empty-state i { font-size: 3rem; margin-bottom: 15px; color: var(--border); }
 
+        /* Quill dark mode fix */
+        .ql-toolbar {
+            background: var(--panel);
+            border-color: var(--border) !important;
+            border-radius: 10px 10px 0 0;
+        }
+        .ql-toolbar .ql-stroke { stroke: var(--text2); }
+        .ql-toolbar .ql-fill { fill: var(--text2); }
+        .ql-toolbar .ql-picker { color: var(--text2); }
+        .ql-toolbar .ql-picker-options { background: var(--panel); border-color: var(--border); }
+        .ql-toolbar .ql-picker-item { color: var(--text2); }
+        .ql-toolbar .ql-active .ql-stroke { stroke: var(--green); }
+        .ql-toolbar .ql-active .ql-fill { fill: var(--green); }
+        .ql-toolbar .ql-picker-label:hover,
+        .ql-toolbar button:hover { color: var(--green); }
+        .ql-toolbar button:hover .ql-stroke { stroke: var(--green); }
+        .ql-toolbar button:hover .ql-fill { fill: var(--green); }
+        .ql-toolbar .ql-picker-label { border-color: transparent; }
+        .ql-toolbar .ql-picker-label.ql-active { color: var(--green); }
+        .ql-container { border-color: var(--border) !important; border-radius: 0 0 10px 10px; }
+
         @media (max-width: 768px) {
             .sidebar { width: 60px; }
             .sidebar-brand span, .nav-item span { display: none; }
@@ -398,7 +420,7 @@
     <!-- Main -->
     <div class="main">
         <div class="top-bar">
-            <div class="page-title" id="page-title">Dashboard</div>
+            <div class="page-title" id="section-title">Dashboard</div>
             <div class="user-info">
                 <i class="fas fa-user-circle"></i>
                 <span id="display-username">Admin</span>
@@ -506,9 +528,10 @@
                     </div>
                 </div>
                 <div class="form-group">
-                    <label>Content (HTML)</label>
-                    <textarea id="page-content" placeholder="Write page content here..."></textarea>
+                    <label>Content</label>
+                    <div id="page-editor" style="min-height:300px;background:var(--input);border:2px solid var(--border);border-radius:10px;color:var(--text);"></div>
                 </div>
+                <input type="hidden" id="page-content">
                 <div class="modal-footer">
                     <button class="btn btn-blue" onclick="closeModal('pageModal')">Cancel</button>
                     <button class="btn" onclick="savePage()"><i class="fas fa-save"></i> Save Page</button>
@@ -558,9 +581,10 @@
                     <textarea id="post-excerpt" placeholder="Short summary..." style="min-height: 60px;"></textarea>
                 </div>
                 <div class="form-group">
-                    <label>Content (HTML)</label>
-                    <textarea id="post-content" placeholder="Write post content here..."></textarea>
+                    <label>Content</label>
+                    <div id="post-editor" style="min-height:300px;background:var(--input);border:2px solid var(--border);border-radius:10px;color:var(--text);"></div>
                 </div>
+                <input type="hidden" id="post-content">
                 <div class="modal-footer">
                     <button class="btn btn-blue" onclick="closeModal('postModal')">Cancel</button>
                     <button class="btn" onclick="savePost()"><i class="fas fa-save"></i> Save Post</button>
@@ -571,7 +595,7 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
-        import { getFirestore, collection, doc, getDoc, getDocs, addDoc, updateDoc, deleteDoc, setDoc, query, orderBy, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
+        import { getFirestore, collection, doc, getDoc, getDocs, addDoc, updateDoc, deleteDoc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyDxqQOEuFjIR2W9-lrtAjaYsqPMHa8-6X4",
@@ -604,7 +628,7 @@
             document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
             document.querySelector(`.nav-item[data-section="${section}"]`).classList.add('active');
             document.getElementById(`section-${section}`).classList.add('active');
-            document.getElementById('page-title').innerText = section.charAt(0).toUpperCase() + section.slice(1);
+            document.getElementById('section-title').innerText = section.charAt(0).toUpperCase() + section.slice(1);
             if (section === 'pages') loadPages();
             if (section === 'posts') loadPosts();
             if (section === 'settings') loadSettings();
@@ -656,23 +680,24 @@
             const container = document.getElementById('pages-list');
             container.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
             try {
-                const q = query(collection(db, "pages"), orderBy("title"));
-                const snap = await getDocs(q);
+                const snap = await getDocs(collection(db, "pages"));
                 if (snap.empty) {
                     container.innerHTML = '<div class="empty-state"><i class="fas fa-file-alt"></i><p>No pages yet.</p></div>';
                     return;
                 }
+                const docs = [];
+                snap.forEach(d => docs.push({ id: d.id, ...d.data() }));
+                docs.sort((a, b) => (a.title || '').localeCompare(b.title || ''));
                 let html = `<table><thead><tr><th>Title</th><th>Slug</th><th>Status</th><th style="width:120px">Actions</th></tr></thead><tbody>`;
-                snap.forEach(d => {
-                    const p = d.data();
+                docs.forEach(p => {
                     html += `<tr>
                         <td style="color:var(--text);font-weight:600">${p.title}</td>
-                        <td>/${p.slug}</td>
-                        <td><span class="status-badge ${p.status === 'published' ? 'status-published' : 'status-draft'}">${p.status}</span></td>
+                        <td>/${p.slug || ''}</td>
+                        <td><span class="status-badge ${p.status === 'published' ? 'status-published' : 'status-draft'}">${p.status || 'draft'}</span></td>
                         <td>
                             <div class="action-btns">
-                                <button class="btn-edit" onclick="editPage('${d.id}')"><i class="fas fa-edit"></i></button>
-                                <button class="btn-delete" onclick="deletePage('${d.id}')"><i class="fas fa-trash"></i></button>
+                                <button class="btn-edit" onclick="editPage('${p.id}')"><i class="fas fa-edit"></i></button>
+                                <button class="btn-delete" onclick="deletePage('${p.id}')"><i class="fas fa-trash"></i></button>
                             </div>
                         </td>
                     </tr>`;
@@ -680,7 +705,7 @@
                 html += '</tbody></table>';
                 container.innerHTML = html;
             } catch (e) {
-                container.innerHTML = '<div class="empty-state">Error loading pages.</div>';
+                container.innerHTML = `<div class="empty-state"><i class="fas fa-exclamation-triangle" style="color:var(--danger);font-size:2rem;margin-bottom:10px;"></i><p style="color:var(--danger);font-weight:700;">Error loading pages</p><p style="font-size:0.85rem;margin-top:10px;color:var(--text2);">${e.code || ''} ${e.message || ''}</p></div>`;
                 console.error(e);
             }
         }
@@ -743,23 +768,24 @@
             const container = document.getElementById('posts-list');
             container.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
             try {
-                const q = query(collection(db, "posts"), orderBy("title"));
-                const snap = await getDocs(q);
+                const snap = await getDocs(collection(db, "posts"));
                 if (snap.empty) {
                     container.innerHTML = '<div class="empty-state"><i class="fas fa-newspaper"></i><p>No posts yet.</p></div>';
                     return;
                 }
+                const docs = [];
+                snap.forEach(d => docs.push({ id: d.id, ...d.data() }));
+                docs.sort((a, b) => (a.title || '').localeCompare(b.title || ''));
                 let html = `<table><thead><tr><th>Title</th><th>Category</th><th>Status</th><th style="width:120px">Actions</th></tr></thead><tbody>`;
-                snap.forEach(d => {
-                    const p = d.data();
+                docs.forEach(p => {
                     html += `<tr>
                         <td style="color:var(--text);font-weight:600">${p.title}</td>
                         <td>${p.category || '-'}</td>
-                        <td><span class="status-badge ${p.status === 'published' ? 'status-published' : 'status-draft'}">${p.status}</span></td>
+                        <td><span class="status-badge ${p.status === 'published' ? 'status-published' : 'status-draft'}">${p.status || 'draft'}</span></td>
                         <td>
                             <div class="action-btns">
-                                <button class="btn-edit" onclick="editPost('${d.id}')"><i class="fas fa-edit"></i></button>
-                                <button class="btn-delete" onclick="deletePost('${d.id}')"><i class="fas fa-trash"></i></button>
+                                <button class="btn-edit" onclick="editPost('${p.id}')"><i class="fas fa-edit"></i></button>
+                                <button class="btn-delete" onclick="deletePost('${p.id}')"><i class="fas fa-trash"></i></button>
                             </div>
                         </td>
                     </tr>`;
@@ -767,7 +793,7 @@
                 html += '</tbody></table>';
                 container.innerHTML = html;
             } catch (e) {
-                container.innerHTML = '<div class="empty-state">Error loading posts.</div>';
+                container.innerHTML = `<div class="empty-state"><i class="fas fa-exclamation-triangle" style="color:var(--danger);font-size:2rem;margin-bottom:10px;"></i><p style="color:var(--danger);font-weight:700;">Error loading posts</p><p style="font-size:0.85rem;margin-top:10px;color:var(--text2);">${e.code || ''} ${e.message || ''}</p></div>`;
                 console.error(e);
             }
         }
@@ -888,6 +914,88 @@
         // Load dashboard on init
         loadDashboard();
 
+        // Initialize Quill editors
+        let quillPage, quillPost;
+        try {
+            quillPage = new Quill('#page-editor', {
+                theme: 'snow',
+                placeholder: 'Write page content here...',
+                modules: {
+                    toolbar: [
+                        [{ 'header': [1,2,3,4,5,6,false] }],
+                        ['bold', 'italic', 'underline', 'strike'],
+                        [{ 'color': [] }, { 'background': [] }],
+                        [{ 'list': 'ordered'}, { 'list': 'bullet' }, { 'list': 'check' }],
+                        [{ 'align': [] }],
+                        ['blockquote', 'code-block'],
+                        [{ 'indent': '-1'}, { 'indent': '+1' }],
+                        ['link', 'image', 'video'],
+                        [{ 'direction': 'rtl' }],
+                        ['clean']
+                    ]
+                }
+            });
+
+            quillPost = new Quill('#post-editor', {
+                theme: 'snow',
+                placeholder: 'Write post content here...',
+                modules: {
+                    toolbar: [
+                        [{ 'header': [1,2,3,4,5,6,false] }],
+                        ['bold', 'italic', 'underline', 'strike'],
+                        [{ 'color': [] }, { 'background': [] }],
+                        [{ 'list': 'ordered'}, { 'list': 'bullet' }, { 'list': 'check' }],
+                        [{ 'align': [] }],
+                        ['blockquote', 'code-block'],
+                        [{ 'indent': '-1'}, { 'indent': '+1' }],
+                        ['link', 'image', 'video'],
+                        [{ 'direction': 'rtl' }],
+                        ['clean']
+                    ]
+                }
+            });
+
+            // Patch openPageModal to set Quill content
+            const origOpenPageModal = window.openPageModal;
+            window.openPageModal = (data) => {
+                origOpenPageModal(data);
+                if (quillPage) quillPage.root.innerHTML = data?.content || '';
+            };
+
+            // Patch openPostModal to set Quill content
+            const origOpenPostModal = window.openPostModal;
+            window.openPostModal = (data) => {
+                origOpenPostModal(data);
+                if (quillPost) quillPost.root.innerHTML = data?.content || '';
+            };
+
+            // Patch savePage to get HTML from Quill
+            const origSavePage = window.savePage;
+            window.savePage = () => {
+                if (quillPage) document.getElementById('page-content').value = quillPage.root.innerHTML;
+                origSavePage();
+            };
+
+            // Patch savePost to get HTML from Quill
+            const origSavePost = window.savePost;
+            window.savePost = () => {
+                if (quillPost) document.getElementById('post-content').value = quillPost.root.innerHTML;
+                origSavePost();
+            };
+
+            // Clear Quill content when modal closes
+            const origCloseModal = window.closeModal;
+            window.closeModal = (id) => {
+                origCloseModal(id);
+                if (id === 'pageModal' && quillPage) quillPage.setContents([], 'silent');
+                if (id === 'postModal' && quillPost) quillPost.setContents([], 'silent');
+            };
+        } catch (e) {
+            console.warn('Quill init failed:', e);
+        }
+
     </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.js"></script>
 </body>
 </html>

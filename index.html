@@ -676,7 +676,7 @@
     <!-- FIREBASE + LOGIC -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
-        import { getFirestore, collection, doc, getDoc, getDocs, query, orderBy, where } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
+        import { getFirestore, collection, doc, getDoc, getDocs, query, where } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
 
         // --- FIREBASE CONFIG (PLACEHOLDER) ---
         const firebaseConfig = {
@@ -794,10 +794,11 @@
                     document.title = settings.siteName || 'CMS';
                 }
 
-                const pagesQuery = query(collection(db, "pages"), where("status", "==", "published"), orderBy("title"));
+                const pagesQuery = query(collection(db, "pages"), where("status", "==", "published"));
                 const pagesSnap = await getDocs(pagesQuery);
                 allPages = [];
                 pagesSnap.forEach(d => allPages.push({ id: d.id, ...d.data() }));
+                allPages.sort((a, b) => (a.title || '').localeCompare(b.title || ''));
 
                 const navContainer = document.getElementById('nav-links');
                 allPages.forEach(page => {
@@ -807,7 +808,8 @@
                     navContainer.appendChild(btn);
                 });
 
-                showHome();
+                // URL routing
+                routeFromURL();
             } catch (e) {
                 console.error(e);
                 document.getElementById('content-area').innerHTML = '<div class="loading"><p>Error loading data.</p></div>';
@@ -816,6 +818,7 @@
 
         // --- VIEWS ---
         window.showHome = () => {
+            history.pushState(null, '', window.location.pathname);
             const area = document.getElementById('content-area');
             let pageLinks = '';
             allPages.slice(0, 4).forEach(p => {
@@ -836,20 +839,23 @@
         };
 
         window.showPosts = async () => {
+            history.pushState(null, '', '?posts');
             const area = document.getElementById('content-area');
             area.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
             try {
-                const q = query(collection(db, "posts"), where("status", "==", "published"), orderBy("title"));
+                const q = query(collection(db, "posts"), where("status", "==", "published"));
                 const snap = await getDocs(q);
                 if (snap.empty) {
                     area.innerHTML = '<div class="hero"><h1>Posts</h1><p style="color:var(--text2)">No posts yet.</p></div>';
                     return;
                 }
+                const posts = [];
+                snap.forEach(d => posts.push({ id: d.id, ...d.data() }));
+                posts.sort((a, b) => (a.title || '').localeCompare(b.title || ''));
                 let html = '<div class="section-title">Latest Posts</div><div class="posts-grid">';
-                snap.forEach(d => {
-                    const p = d.data();
+                posts.forEach(p => {
                     html += `
-                        <div class="post-card" onclick="openPostModal('${d.id}')">
+                        <div class="post-card" onclick="openPostModal('${p.id}')">
                             <div class="post-image">
                                 <img src="${p.image || 'https://via.placeholder.com/400x250/1a2240/76ff03?text=Post'}" alt="${p.title}">
                             </div>
@@ -873,6 +879,7 @@
         };
 
         window.showPage = async (slug) => {
+            history.pushState(null, '', `?page=${slug}`);
             const area = document.getElementById('content-area');
             area.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
             try {
@@ -911,6 +918,7 @@
 
         // --- MODAL ---
         window.openPostModal = async (id) => {
+            history.pushState(null, '', `?post=${id}`);
             try {
                 const snap = await getDoc(doc(db, "posts", id));
                 if (!snap.exists()) return;
@@ -931,15 +939,34 @@
 
         window.closeModal = () => {
             document.getElementById('postModal').classList.remove('active');
+            history.pushState(null, '', '?posts');
         };
         document.getElementById('postModal').addEventListener('click', (e) => {
             if (e.target === e.currentTarget) closeModal();
+        });
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') closeModal();
         });
 
         function setActiveNav(index) {
             const buttons = document.querySelectorAll('#nav-links button');
             buttons.forEach((btn, i) => btn.classList.toggle('active', i === index));
         }
+
+        // --- URL ROUTING ---
+        function routeFromURL() {
+            const params = new URLSearchParams(window.location.search);
+            const pageSlug = params.get('page');
+            const postId = params.get('post');
+            const showPostsPage = params.has('posts');
+
+            if (pageSlug) showPage(pageSlug);
+            else if (showPostsPage) showPosts();
+            else if (postId) { showPosts(); setTimeout(() => openPostModal(postId), 300); }
+            else showHome();
+        }
+
+        window.addEventListener('popstate', routeFromURL);
 
         // --- INIT ---
         window.addEventListener('load', () => {
