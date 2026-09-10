@@ -13,6 +13,14 @@
     <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Quicksand:wght@500;600;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.9.1/gsap.min.js"></script>
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js",
+                "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"
+            }
+        }
+    </script>
     <style>
         :root {
             --primary: #5488c0;
@@ -849,6 +857,71 @@
             display: none;
         }
 
+        /* Bob corner widget — model transparan tanpa background */
+        #bob-widget {
+            position: fixed;
+            right: 18px;
+            bottom: 18px;
+            width: 190px;
+            z-index: 900;
+            background: transparent;
+            border: none;
+            box-shadow: none;
+        }
+
+        #bob-widget[hidden] {
+            display: none;
+        }
+
+        #bob-canvas {
+            width: 100%;
+            height: 220px;
+            display: block;
+            background: transparent;
+            cursor: pointer;
+        }
+
+        #bob-bubble {
+            position: relative;
+            background: #fff;
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            padding: 8px 10px;
+            font-size: 0.72rem;
+            font-weight: 600;
+            line-height: 1.45;
+            color: var(--ink);
+            margin-bottom: 10px;
+            max-height: 88px;
+            overflow: hidden;
+            pointer-events: none;
+        }
+
+        #bob-bubble::after {
+            content: '';
+            position: absolute;
+            left: 50%;
+            bottom: -9px;
+            width: 14px;
+            height: 14px;
+            background: #fff;
+            border-right: 2px solid var(--border);
+            border-bottom: 2px solid var(--border);
+            transform: translateX(-50%) rotate(45deg);
+        }
+
+        @media (max-width: 768px) {
+            #bob-widget {
+                width: 140px;
+                right: 12px;
+                bottom: 12px;
+            }
+
+            #bob-canvas {
+                height: 160px;
+            }
+        }
+
         @media (max-width: 768px) {
             .navbar {
                 padding: 15px 20px;
@@ -919,6 +992,12 @@
                 </nav>
             </footer>
         </div>
+    </div>
+
+    <!-- Bob corner mascot (muncul setelah assets/bob.glb tersedia) -->
+    <div id="bob-widget" hidden>
+        <div id="bob-bubble">…</div>
+        <canvas id="bob-canvas" title="Klik untuk ganti animasi"></canvas>
     </div>
 
     <!-- Post Detail Modal -->
@@ -1370,6 +1449,106 @@
         window.addEventListener('load', () => {
             loadAll();
         });
+    </script>
+
+    <!-- Bob corner mascot: skeletal .glb dari Simitone Avatar Export -->
+    <script type="module">
+        import * as THREE from 'three';
+        import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+
+        (async () => {
+            const widget = document.getElementById('bob-widget');
+            const canvas = document.getElementById('bob-canvas');
+            const bubble = document.getElementById('bob-bubble');
+            // Bubble chat: random advice dari Advice Slip API
+            const loadAdvice = async () => {
+                try {
+                    const res = await fetch('https://api.adviceslip.com/advice', { cache: 'no-store' });
+                    const data = await res.json();
+                    const advice = data?.slip?.advice;
+                    if (advice && bubble) bubble.textContent = '\u201C' + advice + '\u201D';
+                } catch (e) {
+                    if (bubble && !bubble.textContent) bubble.textContent = '\u201CHello!\u201D';
+                }
+            };
+            try {
+                const gltf = await new GLTFLoader().loadAsync('assets/bob.glb');
+                const model = gltf.scene;
+                const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
+                renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+                const scene = new THREE.Scene();
+                scene.add(new THREE.AmbientLight(0xffffff, 1.1));
+                const sun = new THREE.DirectionalLight(0xfff2dd, 2.0);
+                sun.position.set(2, 4, 3);
+                scene.add(sun);
+
+                const group = new THREE.Group();
+                group.add(model);
+                scene.add(group);
+
+                // Frame model
+                const box = new THREE.Box3().setFromObject(model);
+                const size = box.getSize(new THREE.Vector3());
+                const center = box.getCenter(new THREE.Vector3());
+                group.position.sub(center);
+                group.position.y += size.y / 2;
+                const camera = new THREE.PerspectiveCamera(30, 1, 0.01, 100);
+                const dist = (size.y || 1.7) * 2.1;
+                camera.position.set(0.35, size.y * 0.55, dist);
+                camera.lookAt(0, size.y * 0.48, 0);
+
+                const resize = () => {
+                    const w = canvas.clientWidth || 190;
+                    const h = canvas.clientHeight || 220;
+                    renderer.setSize(w, h, false);
+                    camera.aspect = w / h;
+                    camera.updateProjectionMatrix();
+                };
+                resize();
+                window.addEventListener('resize', resize);
+
+                // Animations: model saja, ganti otomatis tiap ada aktivitas halaman
+                const mixer = new THREE.AnimationMixer(model);
+                const clips = gltf.animations || [];
+                let idx = 0;
+                const play = (i) => {
+                    mixer.stopAllAction();
+                    if (!clips.length) return;
+                    idx = ((i % clips.length) + clips.length) % clips.length;
+                    mixer.clipAction(clips[idx]).setLoop(THREE.LoopRepeat, Infinity).play();
+                };
+                play(0);
+                loadAdvice();
+                setInterval(loadAdvice, 15000);
+                canvas.addEventListener('click', () => { play(idx + 1); loadAdvice(); });
+
+                // Trigger ganti animasi: hanya saat klik link menu
+                let lastTrigger = 0;
+                const triggerNext = () => {
+                    if (clips.length < 2) return;
+                    const now = performance.now();
+                    if (now - lastTrigger < 1200) return;
+                    lastTrigger = now;
+                    play(idx + 1);
+                    loadAdvice();
+                };
+                document.getElementById('nav-links')?.addEventListener('click', (e) => {
+                    if (e.target.closest('button')) triggerNext();
+                });
+
+                widget.hidden = false;
+                const clock = new THREE.Clock();
+                renderer.setAnimationLoop(() => {
+                    const dt = Math.min(clock.getDelta(), 0.1);
+                    mixer.update(dt);
+                    group.rotation.y += dt * 0.4;
+                    renderer.render(scene, camera);
+                });
+            } catch (e) {
+                // assets/bob.glb belum ada (belum export) — widget tetap sembunyi
+                console.warn('[bob] widget off:', e?.message || e);
+            }
+        })();
     </script>
 </body>
 
