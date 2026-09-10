@@ -3,67 +3,120 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Manage pages, posts, and site settings.">
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%235488c0'/%3E%3Ctext x='16' y='22' font-size='16' text-anchor='middle' font-family='sans-serif' font-weight='bold' fill='white'%3ED%3C/text%3E%3C/svg%3E">
     <title>CMS Admin Dashboard</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Quicksand:wght@500;600;700&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.snow.css" rel="stylesheet">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Fredoka+One&family=Quicksand:wght@500;600;700&display=swap');
         :root {
-            --green: #76ff03;
-            --green-d: #64dd17;
-            --blue: #29b6f6;
-            --purple: #d946ef;
-            --bg: #0a0e27;
-            --panel: #1a2240;
-            --input: #232d4a;
-            --text: #ffffff;
-            --text2: #b0b9c6;
-            --danger: #ff5252;
-            --success: #4CAF50;
-            --warning: #ff9800;
-            --border: #3a4d6a;
-            --shadow: 0 8px 32px rgba(0,0,0,0.3);
+            --primary: #5488c0;
+            --primary-d: #3f6da3;
+            --bg-start: #a9c5e3;
+            --bg-end: #4da6a9;
+            --paper: #f4f1ea;
+            --paper-edge: #e2dec9;
+            --paper-blue: #cfe0f1;
+            --ink: #334155;
+            --ink-soft: #64748b;
+            --input: #ffffff;
+            --text: #334155;
+            --text2: #64748b;
+            --accent: #4ade80;
+            --accent-d: #16a34a;
+            --danger: #e5484d;
+            --success: #16a34a;
+            --warning: #b45309;
+            --green: #5488c0;
+            --border: #cbd5e1;
+            --shadow: 5px 5px 0px rgba(0,0,0,0.08);
         }
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body {
-            font-family: 'Nunito', sans-serif;
-            background: linear-gradient(135deg, #0a0e27 0%, #16213e 100%);
+            font-family: 'Quicksand', sans-serif;
+            font-weight: 500;
+            background: linear-gradient(135deg, var(--bg-start), var(--bg-end));
             color: var(--text);
-            min-height: 100vh;
+            min-height: 100dvh;
             display: flex;
+            font-variant-numeric: tabular-nums;
         }
+        .checkered-bg {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            opacity: 0.4;
+            z-index: 0;
+            background-image:
+                linear-gradient(45deg, rgba(255,255,255,0.1) 25%, transparent 25%),
+                linear-gradient(-45deg, rgba(255,255,255,0.1) 25%, transparent 25%),
+                linear-gradient(45deg, transparent 75%, rgba(255,255,255,0.1) 75%),
+                linear-gradient(-45deg, transparent 75%, rgba(255,255,255,0.1) 75%);
+            background-size: 60px 60px;
+            background-position: 0 0, 0 30px, 30px -30px, -30px 0px;
+        }
+        .paper-panel {
+            clip-path: polygon(1% 2%, 98% 1%, 100% 98%, 2% 100%, 0% 50%);
+        }
+        .paper-scrap {
+            clip-path: polygon(5% 0%, 95% 5%, 100% 90%, 92% 100%, 8% 95%, 0% 80%);
+        }
+        .font-display {
+            font-family: 'Fredoka One', cursive;
+            font-weight: 400;
+        }
+        :focus-visible {
+            outline: 3px solid var(--primary);
+            outline-offset: 3px;
+        }
+        .skip-link {
+            position: absolute;
+            left: -999px;
+            top: 8px;
+            background: var(--ink);
+            color: #fff;
+            padding: 10px 18px;
+            font-weight: 700;
+            z-index: 2000;
+        }
+        .skip-link:focus { left: 8px; }
         ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: rgba(26,34,64,0.5); }
-        ::-webkit-scrollbar-thumb { background: var(--green); border-radius: 4px; }
+        ::-webkit-scrollbar-track { background: var(--paper-edge); }
+        ::-webkit-scrollbar-thumb { background: var(--primary); }
 
         /* Sidebar */
         .sidebar {
             width: 260px;
-            background: rgba(26,34,64,0.95);
-            border-right: 1px solid var(--border);
+            background: var(--paper);
+            border-right: 4px solid var(--paper-edge);
             padding: 25px 0;
             position: fixed;
             top: 0; left: 0;
-            height: 100vh;
+            height: 100dvh;
             overflow-y: auto;
             z-index: 100;
-            backdrop-filter: blur(10px);
         }
         .sidebar-brand {
-            font-size: 1.4rem;
-            font-weight: 900;
+            font-family: 'Fredoka One', cursive;
+            font-size: 1.2rem;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
             padding: 0 25px 25px;
-            border-bottom: 1px solid var(--border);
+            border-bottom: 3px dashed var(--paper-edge);
             margin-bottom: 15px;
-            background: linear-gradient(135deg, var(--green), var(--blue));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+            color: var(--text);
             display: flex;
             align-items: center;
             gap: 12px;
         }
-        .sidebar-brand i { -webkit-text-fill-color: var(--green); font-size: 1.5rem; }
+        .sidebar-brand .dot {
+            width: 26px;
+            height: 26px;
+            background: var(--primary);
+            flex-shrink: 0;
+        }
         .nav-item {
             display: flex;
             align-items: center;
@@ -71,25 +124,29 @@
             padding: 14px 25px;
             color: var(--text2);
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: background 0.2s ease, color 0.2s ease;
             border-left: 4px solid transparent;
-            font-weight: 600;
+            font-weight: 700;
             text-decoration: none;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            font-size: 0.88rem;
         }
         .nav-item:hover, .nav-item.active {
-            color: var(--green);
-            background: rgba(118,255,3,0.08);
-            border-left-color: var(--green);
+            color: var(--primary-d);
+            background: var(--paper-blue);
+            border-left-color: var(--primary);
         }
+        .nav-item:active { transform: translateX(2px); }
         .nav-item i { width: 22px; font-size: 1.1rem; }
         .nav-item .badge {
             margin-left: auto;
-            background: var(--green);
-            color: #000;
+            background: var(--paper-blue);
+            color: var(--primary-d);
+            border: 2px solid var(--primary);
             font-size: 0.75rem;
             padding: 2px 10px;
-            border-radius: 10px;
-            font-weight: 800;
+            font-weight: 700;
         }
 
         /* Main */
@@ -97,7 +154,9 @@
             margin-left: 260px;
             flex: 1;
             padding: 25px 35px;
-            min-height: 100vh;
+            min-height: 100dvh;
+            position: relative;
+            z-index: 1;
         }
         .top-bar {
             display: flex;
@@ -105,33 +164,36 @@
             align-items: center;
             margin-bottom: 30px;
             padding: 15px 25px;
-            background: rgba(26,34,64,0.9);
-            border-radius: 15px;
-            border: 1px solid var(--border);
+            background: var(--paper);
+            border-right: 4px solid var(--paper-edge);
+            border-bottom: 4px solid var(--paper-edge);
             box-shadow: var(--shadow);
         }
-        .page-title { font-size: 1.8rem; font-weight: 900; color: var(--green); }
+        .page-title { font-family: 'Fredoka One', cursive; font-size: 1.4rem; letter-spacing: 0.03em; text-transform: uppercase; color: var(--text); }
         .user-info {
             display: flex;
             align-items: center;
             gap: 15px;
-            color: var(--green);
-            font-weight: 700;
+            color: var(--text);
+            font-weight: 600;
         }
         .btn-logout {
-            background: linear-gradient(135deg, var(--danger), #ff6b6b);
-            color: white;
-            border: none;
+            background: transparent;
+            color: var(--text2);
+            border: 1px solid var(--border);
             padding: 10px 20px;
             border-radius: 10px;
             cursor: pointer;
-            font-weight: 700;
+            font-weight: 600;
             font-size: 0.85rem;
+            font-family: inherit;
             display: flex;
             align-items: center;
             gap: 8px;
+            transition: color 0.2s ease, border-color 0.2s ease;
         }
-        .btn-logout:hover { transform: translateY(-2px); }
+        .btn-logout:hover { color: var(--danger); border-color: var(--danger); transform: none; }
+        .btn-logout:active { transform: translateY(1px); }
 
         /* Sections */
         .section { display: none; }
@@ -145,38 +207,49 @@
             margin-bottom: 30px;
         }
         .stat-card {
-            background: linear-gradient(135deg, rgba(35,45,74,0.8), rgba(26,34,64,0.6));
-            border: 1px solid var(--border);
-            border-radius: 15px;
+            background: #fff;
+            border: 2px solid var(--border);
             padding: 25px;
-            transition: all 0.3s ease;
+            transition: transform 0.2s ease, border-color 0.2s ease;
+            box-shadow: var(--shadow);
         }
+        .stat-card:nth-child(odd) { transform: rotate(-0.4deg); }
+        .stat-card:nth-child(even) { transform: rotate(0.4deg); }
         .stat-card:hover {
-            border-color: var(--green);
-            transform: translateY(-4px);
-            box-shadow: 0 10px 30px rgba(118,255,3,0.15);
+            border-color: var(--primary);
+            transform: rotate(0deg) translateY(-3px);
         }
-        .stat-icon { font-size: 2rem; margin-bottom: 10px; }
-        .stat-value { font-size: 2.2rem; font-weight: 900; color: var(--green); }
-        .stat-label { color: var(--text2); font-size: 0.9rem; font-weight: 600; }
+        .stat-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 44px;
+            height: 44px;
+            background: var(--paper-blue);
+            color: var(--primary-d);
+            font-size: 1.3rem;
+            margin-bottom: 12px;
+        }
+        .stat-value { font-family: 'Fredoka One', cursive; font-size: 2rem; letter-spacing: 0.02em; color: var(--text); }
+        .stat-label { color: var(--text2); font-size: 0.78rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; }
 
         /* Tables */
         .table-container {
-            background: rgba(35,45,74,0.5);
-            border: 1px solid var(--border);
-            border-radius: 15px;
+            background: #fff;
+            border: 2px solid var(--border);
             overflow: hidden;
             margin-bottom: 25px;
+            box-shadow: var(--shadow);
         }
         .table-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
             padding: 20px 25px;
-            border-bottom: 1px solid var(--border);
-            background: rgba(26,34,64,0.5);
+            border-bottom: 3px dashed var(--paper-edge);
+            background: var(--paper);
         }
-        .table-header h3 { font-size: 1.2rem; color: var(--green); }
+        .table-header h3 { font-family: 'Fredoka One', cursive; font-size: 1.05rem; letter-spacing: 0.03em; color: var(--text); }
         table { width: 100%; border-collapse: collapse; }
         th {
             text-align: left;
@@ -190,97 +263,108 @@
         }
         td {
             padding: 14px 20px;
-            border-bottom: 1px solid rgba(58,77,106,0.3);
+            border-bottom: 1px solid var(--paper-edge);
             font-size: 0.95rem;
+            font-weight: 500;
             color: var(--text2);
         }
-        tr:hover td { background: rgba(118,255,3,0.03); }
+        tr:hover td { background: var(--paper-blue); }
         .status-badge {
+            display: inline-block;
             padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 0.8rem;
+            font-size: 0.72rem;
             font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
         }
-        .status-published { background: rgba(76,175,80,0.2); color: #4CAF50; }
-        .status-draft { background: rgba(255,152,0,0.2); color: var(--warning); }
+        .status-published { background: #dcfce7; color: var(--success); border: 2px solid var(--success); }
+        .status-draft { background: #fef3c7; color: var(--warning); border: 2px solid var(--warning); }
         .action-btns { display: flex; gap: 8px; }
         .action-btns button {
             padding: 6px 12px;
             border: none;
-            border-radius: 8px;
             cursor: pointer;
             font-size: 0.8rem;
-            font-weight: 600;
-            transition: all 0.2s ease;
+            font-weight: 700;
+            font-family: inherit;
+            transition: transform 0.15s ease;
         }
-        .btn-edit { background: rgba(41,182,246,0.2); color: var(--blue); }
-        .btn-edit:hover { background: var(--blue); color: #000; }
-        .btn-delete { background: rgba(255,82,82,0.2); color: var(--danger); }
+        .btn-edit { background: var(--paper-blue); color: var(--primary-d); }
+        .btn-edit:hover { background: var(--primary); color: #fff; }
+        .btn-delete { background: #fee2e2; color: var(--danger); }
         .btn-delete:hover { background: var(--danger); color: #fff; }
+        .action-btns button:active { transform: scale(0.96); }
 
         /* Buttons */
         .btn {
-            background: linear-gradient(135deg, var(--green), var(--green-d));
-            color: #000;
+            background: var(--accent);
+            color: #fff;
             border: none;
+            border-bottom: 5px solid var(--accent-d);
             padding: 12px 24px;
-            border-radius: 10px;
             cursor: pointer;
             font-weight: 700;
             font-size: 0.95rem;
+            font-family: inherit;
             display: inline-flex;
             align-items: center;
             gap: 8px;
-            transition: all 0.3s ease;
+            transition: transform 0.15s ease, filter 0.15s ease;
         }
-        .btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(118,255,3,0.3); }
+        .btn:hover { filter: brightness(1.06); transform: scale(1.03); }
+        .btn:active { transform: translateY(2px); }
         .btn-sm { padding: 8px 16px; font-size: 0.85rem; }
-        .btn-blue { background: linear-gradient(135deg, var(--blue), #2196F3); color: white; }
-        .btn-danger { background: linear-gradient(135deg, var(--danger), #ff6b6b); color: white; }
+        .btn-secondary { background: #fff; color: var(--text2); border: 2px solid var(--border); border-bottom: 5px solid var(--border); }
+        .btn-secondary:hover { color: var(--primary-d); border-color: var(--primary); border-bottom-color: var(--primary-d); filter: none; }
+        .btn-danger { background: var(--danger); color: #fff; border-bottom: 5px solid #991b1b; }
 
         /* Form Modal */
         .modal {
             display: none;
             position: fixed;
             top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0,0,0,0.8);
-            backdrop-filter: blur(5px);
+            background: rgba(51,65,85,0.55);
             z-index: 1000;
             align-items: center;
             justify-content: center;
+            padding: 20px;
         }
         .modal.active { display: flex; }
         .modal-content {
-            background: linear-gradient(135deg, rgba(26,34,64,0.98), rgba(35,45,74,0.98));
-            border: 2px solid var(--border);
-            border-radius: 20px;
+            background: var(--paper);
+            border-right: 4px solid var(--paper-edge);
+            border-bottom: 4px solid var(--paper-edge);
             width: 90%;
             max-width: 700px;
             max-height: 90vh;
             overflow-y: auto;
-            box-shadow: 0 30px 80px rgba(0,0,0,0.8), 0 0 40px rgba(118,255,3,0.2);
+            box-shadow: 8px 8px 0px rgba(0,0,0,0.15);
         }
         .modal-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 25px 30px;
-            border-bottom: 2px solid var(--border);
+            padding: 22px 28px;
+            border-bottom: 3px dashed var(--paper-edge);
             position: sticky;
             top: 0;
-            background: rgba(26,34,64,0.95);
+            background: var(--paper);
             z-index: 1;
         }
-        .modal-header h2 { color: var(--green); font-size: 1.5rem; }
+        .modal-header h2 { font-family: 'Fredoka One', cursive; color: var(--text); font-size: 1.25rem; letter-spacing: 0.03em; }
         .modal-close {
-            background: none;
-            border: none;
+            background: #fff;
+            border: 2px solid var(--border);
             color: var(--text2);
-            font-size: 2rem;
+            font-size: 1.6rem;
+            line-height: 1;
             cursor: pointer;
-            padding: 0 10px;
+            width: 42px;
+            height: 42px;
+            font-family: inherit;
+            transition: transform 0.2s ease, color 0.2s ease;
         }
-        .modal-close:hover { color: var(--green); }
+        .modal-close:hover { color: var(--primary); border-color: var(--primary); transform: rotate(90deg); }
         .modal-body { padding: 30px; }
         .form-group { margin-bottom: 20px; }
         .form-group label {
@@ -288,7 +372,9 @@
             margin-bottom: 8px;
             font-weight: 700;
             color: var(--text);
-            font-size: 0.9rem;
+            font-size: 0.78rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
         }
         .form-group input, .form-group textarea, .form-group select {
             width: 100%;
@@ -296,15 +382,14 @@
             border: 2px solid var(--border);
             color: var(--text);
             padding: 14px;
-            border-radius: 10px;
             font-family: inherit;
             font-size: 0.95rem;
-            transition: all 0.3s ease;
+            font-weight: 500;
+            transition: border-color 0.2s ease;
         }
         .form-group input:focus, .form-group textarea:focus, .form-group select:focus {
             outline: none;
-            border-color: var(--green);
-            box-shadow: 0 0 0 3px rgba(118,255,3,0.15);
+            border-color: var(--primary);
         }
         .form-group textarea { min-height: 150px; resize: vertical; }
         .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
@@ -322,10 +407,10 @@
         .settings-form .form-group { margin-bottom: 25px; }
 
         /* Loading */
-        .loading { text-align: center; padding: 60px 20px; color: var(--text2); }
+        .loading { text-align: center; padding: 60px 20px; color: var(--text2); font-weight: 600; }
         .spinner {
-            border: 4px solid rgba(58,77,106,0.3);
-            border-top: 4px solid var(--green);
+            border: 4px solid var(--paper-edge);
+            border-top: 4px solid var(--primary);
             border-radius: 50%;
             width: 50px; height: 50px;
             animation: spin 1s linear infinite;
@@ -335,42 +420,55 @@
 
         .status-msg {
             padding: 14px 20px;
-            border-radius: 10px;
-            font-weight: 600;
+            font-weight: 700;
             margin-bottom: 20px;
             display: none;
         }
         .status-msg.show { display: block; }
-        .status-msg.success { background: rgba(76,175,80,0.2); color: #4CAF50; border: 1px solid #4CAF50; }
-        .status-msg.error { background: rgba(255,82,82,0.2); color: var(--danger); border: 1px solid var(--danger); }
+        .status-msg.success { background: #dcfce7; color: var(--success); border: 2px solid var(--success); }
+        .status-msg.error { background: #fee2e2; color: var(--danger); border: 2px solid var(--danger); }
 
         .empty-state {
             text-align: center;
-            padding: 60px 20px;
+            padding: 56px 20px;
             color: var(--text2);
         }
-        .empty-state i { font-size: 3rem; margin-bottom: 15px; color: var(--border); }
+        .empty-state i { font-size: 2.2rem; margin-bottom: 15px; color: var(--border); }
+        .empty-state p:first-of-type { font-weight: 600; color: var(--text); margin-bottom: 6px; }
 
-        /* Quill dark mode fix */
-        .ql-toolbar {
-            background: var(--panel);
-            border-color: var(--border) !important;
-            border-radius: 10px 10px 0 0;
+        /* Skeleton rows for tables */
+        .skeleton-row {
+            height: 18px;
+            background: linear-gradient(90deg, var(--paper-edge) 25%, #fff 50%, var(--paper-edge) 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.4s infinite;
+            margin: 14px 20px;
         }
-        .ql-toolbar .ql-stroke { stroke: var(--text2); }
-        .ql-toolbar .ql-fill { fill: var(--text2); }
-        .ql-toolbar .ql-picker { color: var(--text2); }
-        .ql-toolbar .ql-picker-options { background: var(--panel); border-color: var(--border); }
-        .ql-toolbar .ql-picker-item { color: var(--text2); }
-        .ql-toolbar .ql-active .ql-stroke { stroke: var(--green); }
-        .ql-toolbar .ql-active .ql-fill { fill: var(--green); }
+        @keyframes shimmer {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+
+        /* Quill light paper fix */
+        .ql-toolbar {
+            background: var(--paper);
+            border-color: var(--border) !important;
+        }
+        .ql-toolbar .ql-stroke { stroke: var(--ink-soft); }
+        .ql-toolbar .ql-fill { fill: var(--ink-soft); }
+        .ql-toolbar .ql-picker { color: var(--ink-soft); }
+        .ql-toolbar .ql-picker-options { background: #fff; border-color: var(--border); }
+        .ql-toolbar .ql-picker-item { color: var(--ink-soft); }
+        .ql-toolbar .ql-active .ql-stroke { stroke: var(--primary); }
+        .ql-toolbar .ql-active .ql-fill { fill: var(--primary); }
         .ql-toolbar .ql-picker-label:hover,
-        .ql-toolbar button:hover { color: var(--green); }
-        .ql-toolbar button:hover .ql-stroke { stroke: var(--green); }
-        .ql-toolbar button:hover .ql-fill { fill: var(--green); }
+        .ql-toolbar button:hover { color: var(--primary); }
+        .ql-toolbar button:hover .ql-stroke { stroke: var(--primary); }
+        .ql-toolbar button:hover .ql-fill { fill: var(--primary); }
         .ql-toolbar .ql-picker-label { border-color: transparent; }
-        .ql-toolbar .ql-picker-label.ql-active { color: var(--green); }
-        .ql-container { border-color: var(--border) !important; border-radius: 0 0 10px 10px; }
+        .ql-toolbar .ql-picker-label.ql-active { color: var(--primary); }
+        .ql-container { border-color: var(--border) !important; background: #fff; }
+        .ql-editor { color: var(--ink); }
 
         @media (max-width: 768px) {
             .sidebar { width: 60px; }
@@ -389,13 +487,15 @@
     </style>
 </head>
 <body>
+    <div class="checkered-bg" aria-hidden="true"></div>
+    <a class="skip-link" href="#dashboard-main">Skip to content</a>
     <script>if(localStorage.getItem('isLoggedIn')!=='true'){window.location.href="login.html";}</script>
 
     <!-- Sidebar -->
-    <div class="sidebar">
+    <nav class="sidebar" aria-label="Admin">
         <div class="sidebar-brand">
-            <i class="fas fa-cubes"></i>
-            <span>CMS Panels</span>
+            <span class="dot paper-scrap" aria-hidden="true"></span>
+            <span>CMS panels</span>
         </div>
         <div class="nav-item active" data-section="dashboard">
             <i class="fas fa-th-large"></i> <span>Dashboard</span>
@@ -408,17 +508,31 @@
             <i class="fas fa-newspaper"></i> <span>Posts</span>
             <span class="badge" id="nav-posts-count">0</span>
         </div>
+        <div class="nav-item" data-section="media">
+            <i class="fas fa-images"></i> <span>Media</span>
+            <span class="badge" id="nav-media-count">0</span>
+        </div>
+        <div class="nav-item" data-section="comments">
+            <i class="fas fa-comments"></i> <span>Comments</span>
+            <span class="badge" id="nav-comments-count">0</span>
+        </div>
+        <div class="nav-item" data-section="users">
+            <i class="fas fa-users"></i> <span>Users</span>
+        </div>
+        <div class="nav-item" data-section="menus">
+            <i class="fas fa-bars"></i> <span>Menus</span>
+        </div>
         <div class="nav-item" data-section="settings">
             <i class="fas fa-cog"></i> <span>Settings</span>
         </div>
         <div style="border-top: 1px solid var(--border); margin: 20px 25px 0;"></div>
         <div class="nav-item" onclick="window.location.href='index.html'" style="cursor:pointer;">
-            <i class="fas fa-external-link-alt"></i> <span>View Site</span>
+            <i class="fas fa-external-link-alt"></i> <span>View site</span>
         </div>
-    </div>
+    </nav>
 
     <!-- Main -->
-    <div class="main">
+    <main class="main" id="dashboard-main">
         <div class="top-bar">
             <div class="page-title" id="section-title">Dashboard</div>
             <div class="user-info">
@@ -434,32 +548,32 @@
         <div class="section active" id="section-dashboard">
             <div class="stats-grid">
                 <div class="stat-card">
-                    <div class="stat-icon">📄</div>
+                    <div class="stat-icon" aria-hidden="true">▤</div>
                     <div class="stat-value" id="stat-pages">0</div>
-                    <div class="stat-label">Total Pages</div>
+                    <div class="stat-label">Total pages</div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-icon">📰</div>
+                    <div class="stat-icon" aria-hidden="true">✎</div>
                     <div class="stat-value" id="stat-posts">0</div>
-                    <div class="stat-label">Total Posts</div>
+                    <div class="stat-label">Total posts</div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-icon">✅</div>
+                    <div class="stat-icon" aria-hidden="true">●</div>
                     <div class="stat-value" id="stat-published">0</div>
                     <div class="stat-label">Published</div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-icon">📝</div>
+                    <div class="stat-icon" aria-hidden="true">○</div>
                     <div class="stat-value" id="stat-drafts">0</div>
                     <div class="stat-label">Drafts</div>
                 </div>
             </div>
-            <div style="background: rgba(35,45,74,0.5); border: 1px solid var(--border); border-radius: 15px; padding: 25px;">
-                <h3 style="color: var(--green); margin-bottom: 10px;">Quick Actions</h3>
-                <div style="display: flex; gap: 15px; flex-wrap: wrap;">
-                    <button class="btn" onclick="switchSection('pages'); openPageModal()"><i class="fas fa-plus"></i> New Page</button>
-                    <button class="btn btn-blue" onclick="switchSection('posts'); openPostModal()"><i class="fas fa-plus"></i> New Post</button>
-                    <button class="btn" onclick="switchSection('settings')"><i class="fas fa-cog"></i> Settings</button>
+            <div style="background: var(--paper); border: 2px solid var(--border); padding: 25px; box-shadow: var(--shadow);">
+                <h3 class="font-display" style="color: var(--text); margin-bottom: 14px; font-size: 1.05rem; letter-spacing: 0.03em;">Quick actions</h3>
+                <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+                    <button class="btn" onclick="switchSection('pages'); openPageModal()"><i class="fas fa-plus"></i> New page</button>
+                    <button class="btn btn-secondary" onclick="switchSection('posts'); openPostModal()"><i class="fas fa-plus"></i> New post</button>
+                    <button class="btn btn-secondary" onclick="switchSection('settings')"><i class="fas fa-cog"></i> Settings</button>
                 </div>
             </div>
         </div>
@@ -468,8 +582,8 @@
         <div class="section" id="section-pages">
             <div class="table-container">
                 <div class="table-header">
-                    <h3><i class="fas fa-file-alt"></i> All Pages</h3>
-                    <button class="btn btn-sm" onclick="openPageModal()"><i class="fas fa-plus"></i> New Page</button>
+                    <h3><i class="fas fa-file-alt"></i> All pages</h3>
+                    <button class="btn btn-sm" onclick="openPageModal()"><i class="fas fa-plus"></i> New page</button>
                 </div>
                 <div id="pages-list"><div class="loading"><div class="spinner"></div></div></div>
             </div>
@@ -479,10 +593,100 @@
         <div class="section" id="section-posts">
             <div class="table-container">
                 <div class="table-header">
-                    <h3><i class="fas fa-newspaper"></i> All Posts</h3>
-                    <button class="btn btn-sm btn-blue" onclick="openPostModal()"><i class="fas fa-plus"></i> New Post</button>
+                    <h3><i class="fas fa-newspaper"></i> All posts</h3>
+                    <button class="btn btn-sm" onclick="openPostModal()"><i class="fas fa-plus"></i> New post</button>
                 </div>
                 <div id="posts-list"><div class="loading"><div class="spinner"></div></div></div>
+            </div>
+        </div>
+
+        <!-- MEDIA -->
+        <div class="section" id="section-media">
+            <div class="table-container">
+                <div class="table-header">
+                    <h3><i class="fas fa-images"></i> Media library</h3>
+                </div>
+                <div style="padding: 25px 25px 5px;">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Name</label>
+                            <input type="text" id="media-name" placeholder="e.g. Hero banner">
+                        </div>
+                        <div class="form-group">
+                            <label>Image URL</label>
+                            <input type="url" id="media-url" placeholder="https://…">
+                        </div>
+                    </div>
+                    <button class="btn btn-sm" onclick="addMedia()"><i class="fas fa-plus"></i> Add to library</button>
+                </div>
+                <div id="media-list" style="padding: 10px 25px 25px;"><div class="loading"><div class="spinner"></div></div></div>
+            </div>
+        </div>
+
+        <!-- COMMENTS -->
+        <div class="section" id="section-comments">
+            <div class="table-container">
+                <div class="table-header">
+                    <h3><i class="fas fa-comments"></i> Comments</h3>
+                    <select id="comments-filter" onchange="loadComments()" style="font-family:inherit;padding:8px 12px;border:2px solid var(--border);background:#fff;color:var(--text);font-weight:600;">
+                        <option value="pending">Pending</option>
+                        <option value="approved">Approved</option>
+                        <option value="all">All</option>
+                    </select>
+                </div>
+                <div id="comments-list"><div class="loading"><div class="spinner"></div></div></div>
+            </div>
+        </div>
+
+        <!-- USERS -->
+        <div class="section" id="section-users">
+            <div class="table-container">
+                <div class="table-header">
+                    <h3><i class="fas fa-users"></i> Users</h3>
+                    <button class="btn btn-sm" onclick="openUserModal()"><i class="fas fa-plus"></i> New user</button>
+                </div>
+                <div id="users-list"><div class="loading"><div class="spinner"></div></div></div>
+            </div>
+        </div>
+
+        <!-- MENUS -->
+        <div class="section" id="section-menus">
+            <div class="table-container">
+                <div class="table-header">
+                    <h3><i class="fas fa-bars"></i> Menu builder</h3>
+                    <button class="btn btn-sm" onclick="saveMenus()"><i class="fas fa-save"></i> Save menu</button>
+                </div>
+                <div style="padding: 25px;">
+                    <p style="color:var(--text2);font-size:0.9rem;margin-bottom:15px;">Order the public site navigation. Empty menu falls back to auto navigation.</p>
+                    <div id="menu-rows"></div>
+                    <div class="form-row" style="margin-top:15px;">
+                        <div class="form-group">
+                            <label>Label</label>
+                            <input type="text" id="menu-label" placeholder="e.g. About">
+                        </div>
+                        <div class="form-group">
+                            <label>Type</label>
+                            <select id="menu-kind">
+                                <option value="home">Home</option>
+                                <option value="posts">Posts</option>
+                                <option value="contact">Contact</option>
+                                <option value="page">Page</option>
+                                <option value="custom">Custom URL</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group" id="menu-target-wrap">
+                            <label>Page</label>
+                            <select id="menu-target"></select>
+                        </div>
+                        <div class="form-group" id="menu-url-wrap" style="display:none;">
+                            <label>URL</label>
+                            <input type="url" id="menu-url" placeholder="https://…">
+                        </div>
+                    </div>
+                    <button class="btn btn-sm btn-secondary" onclick="addMenuItem()"><i class="fas fa-plus"></i> Add item</button>
+                </div>
             </div>
         </div>
 
@@ -490,7 +694,7 @@
         <div class="section" id="section-settings">
             <div class="table-container">
                 <div class="table-header">
-                    <h3><i class="fas fa-cog"></i> Site Settings</h3>
+                    <h3><i class="fas fa-cog"></i> Site settings</h3>
                 </div>
                 <div style="padding: 30px;">
                     <div class="settings-form" id="settings-form">
@@ -499,13 +703,13 @@
                 </div>
             </div>
         </div>
-    </div>
+    </main>
 
     <!-- PAGE MODAL -->
     <div class="modal" id="pageModal">
         <div class="modal-content">
             <div class="modal-header">
-                <h2 id="pageModalTitle">New Page</h2>
+                <h2 id="pageModalTitle">New page</h2>
                 <button class="modal-close" onclick="closeModal('pageModal')">&times;</button>
             </div>
             <div class="modal-body">
@@ -533,8 +737,8 @@
                 </div>
                 <input type="hidden" id="page-content">
                 <div class="modal-footer">
-                    <button class="btn btn-blue" onclick="closeModal('pageModal')">Cancel</button>
-                    <button class="btn" onclick="savePage()"><i class="fas fa-save"></i> Save Page</button>
+                    <button class="btn btn-secondary" onclick="closeModal('pageModal')">Cancel</button>
+                    <button class="btn" onclick="savePage()"><i class="fas fa-save"></i> Save page</button>
                 </div>
             </div>
         </div>
@@ -544,7 +748,7 @@
     <div class="modal" id="postModal">
         <div class="modal-content">
             <div class="modal-header">
-                <h2 id="postModalTitle">New Post</h2>
+                <h2 id="postModalTitle">New post</h2>
                 <button class="modal-close" onclick="closeModal('postModal')">&times;</button>
             </div>
             <div class="modal-body">
@@ -566,14 +770,37 @@
                 <div class="form-row">
                     <div class="form-group">
                         <label>Image URL</label>
-                        <input type="url" id="post-image" placeholder="https://...">
+                        <input type="url" id="post-image" placeholder="https://..." oninput="previewPostImage()">
+                        <img id="post-image-preview" src="" alt="" style="display:none;max-width:100%;margin-top:10px;border:2px solid var(--border);">
                     </div>
+                    <div class="form-group">
+                        <label>Or pick from library</label>
+                        <select id="post-image-library" onchange="useLibraryImage()">
+                            <option value="">— Media library —</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
                     <div class="form-group">
                         <label>Status</label>
                         <select id="post-status">
                             <option value="published">Published</option>
                             <option value="draft">Draft</option>
                         </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Author</label>
+                        <input type="text" id="post-author" placeholder="Author name">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Tags (comma separated)</label>
+                        <input type="text" id="post-tags" placeholder="e.g. news, tutorial">
+                    </div>
+                    <div class="form-group">
+                        <label>Meta description (SEO)</label>
+                        <input type="text" id="post-metadesc" placeholder="~155 characters" maxlength="160">
                     </div>
                 </div>
                 <div class="form-group">
@@ -586,8 +813,46 @@
                 </div>
                 <input type="hidden" id="post-content">
                 <div class="modal-footer">
-                    <button class="btn btn-blue" onclick="closeModal('postModal')">Cancel</button>
-                    <button class="btn" onclick="savePost()"><i class="fas fa-save"></i> Save Post</button>
+                    <button class="btn btn-secondary" onclick="closeModal('postModal')">Cancel</button>
+                    <button class="btn" onclick="savePost()"><i class="fas fa-save"></i> Save post</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- USER MODAL -->
+    <div class="modal" id="userModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="userModalTitle">New user</h2>
+                <button class="modal-close" onclick="closeModal('userModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="user-id">
+                <div class="form-group">
+                    <label>Name</label>
+                    <input type="text" id="user-name" placeholder="Full name">
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Email</label>
+                        <input type="email" id="user-email" placeholder="user@example.com">
+                    </div>
+                    <div class="form-group">
+                        <label>Password</label>
+                        <input type="text" id="user-password" placeholder="Password">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Role</label>
+                    <select id="user-role">
+                        <option value="admin">Admin</option>
+                        <option value="editor">Editor</option>
+                    </select>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" onclick="closeModal('userModal')">Cancel</button>
+                    <button class="btn" onclick="saveUser()"><i class="fas fa-save"></i> Save user</button>
                 </div>
             </div>
         </div>
@@ -616,6 +881,7 @@
         window.logout = () => {
             localStorage.removeItem('isLoggedIn');
             localStorage.removeItem('userName');
+            localStorage.removeItem('userRole');
             window.location.href = "login.html";
         };
 
@@ -631,11 +897,55 @@
             document.getElementById('section-title').innerText = section.charAt(0).toUpperCase() + section.slice(1);
             if (section === 'pages') loadPages();
             if (section === 'posts') loadPosts();
+            if (section === 'media') loadMedia();
+            if (section === 'comments') loadComments();
+            if (section === 'users') loadUsers();
+            if (section === 'menus') loadMenus();
             if (section === 'settings') loadSettings();
             if (section === 'dashboard') loadDashboard();
         };
 
         // Helpers
+        // `content` may be stored as a Firestore map (e.g. Quill Delta
+        // {ops:[...]} or {html:...}). Coerce to HTML so forms never show
+        // or re-save the literal string "[object Object]".
+        function escapeHtml(s) {
+            return String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+        }
+        function tsMillis(v) {
+            if (v == null) return 0;
+            if (typeof v.toMillis === 'function') return v.toMillis();
+            if (typeof v.toDate === 'function') return v.toDate().getTime();
+            if (typeof v === 'object' && typeof v.seconds === 'number') return v.seconds * 1000;
+            const t = new Date(v).getTime();
+            return isNaN(t) ? 0 : t;
+        }
+        function fmtDate(v) {
+            const ms = tsMillis(v);
+            if (!ms) return '-';
+            return new Date(ms).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
+        }
+        function newestFirst(a, b) {
+            return (tsMillis(b.createdAt) || tsMillis(b.updatedAt)) - (tsMillis(a.createdAt) || tsMillis(a.updatedAt));
+        }
+        function deltaToHtml(delta) {
+            if (!delta || !Array.isArray(delta.ops)) return '';
+            const text = delta.ops.map(op => typeof op.insert === 'string' ? op.insert : '').join('');
+            return text.split('\n').map(line => line.trim() ? `<p>${escapeHtml(line)}</p>` : '').join('');
+        }
+        function richToHtml(value) {
+            if (value == null) return '';
+            if (typeof value === 'string') return value;
+            if (Array.isArray(value)) return value.map(richToHtml).join('');
+            if (typeof value === 'object') {
+                if (Array.isArray(value.ops)) return deltaToHtml(value);
+                for (const k of ['html', 'content', 'text', 'body', 'value']) {
+                    if (value[k] !== undefined) return richToHtml(value[k]);
+                }
+                return '';
+            }
+            return String(value);
+        }
         function showStatus(msg, type) {
             const el = document.getElementById('status-msg');
             el.textContent = msg;
@@ -661,15 +971,45 @@
             try {
                 const pagesSnap = await getDocs(collection(db, "pages"));
                 const postsSnap = await getDocs(collection(db, "posts"));
-                let published = 0, drafts = 0;
+                const commentsSnap = await getDocs(collection(db, "comments"));
+                const mediaSnap = await getDocs(collection(db, "media"));
+                let published = 0, drafts = 0, pending = 0;
                 postsSnap.forEach(d => { if (d.data().status === 'published') published++; else drafts++; });
                 pagesSnap.forEach(d => { if (d.data().status === 'published') published++; else drafts++; });
+                commentsSnap.forEach(d => { if (d.data().status === 'pending') pending++; });
                 document.getElementById('stat-pages').textContent = pagesSnap.size;
                 document.getElementById('stat-posts').textContent = postsSnap.size;
                 document.getElementById('stat-published').textContent = published;
                 document.getElementById('stat-drafts').textContent = drafts;
                 document.getElementById('nav-pages-count').textContent = pagesSnap.size;
                 document.getElementById('nav-posts-count').textContent = postsSnap.size;
+                document.getElementById('nav-media-count').textContent = mediaSnap.size;
+                document.getElementById('nav-comments-count').textContent = pending;
+
+                const pages = [];
+                pagesSnap.forEach(d => pages.push({ id: d.id, ...d.data() }));
+                const posts = [];
+                postsSnap.forEach(d => posts.push({ id: d.id, ...d.data() }));
+                pages.sort(newestFirst);
+                posts.sort(newestFirst);
+                const recentHtml = (items, kind) => items.slice(0, 5).map(p =>
+                    `<tr><td style="color:var(--text);font-weight:600">${escapeHtml(p.title || 'Untitled')}</td><td>${escapeHtml(fmtDate(p.createdAt || p.updatedAt))}</td><td><span class="status-badge ${p.status === 'published' ? 'status-published' : 'status-draft'}">${escapeHtml(p.status || 'draft')}</span></td></tr>`
+                ).join('') || '<tr><td colspan="3">Nothing here yet.</td></tr>';
+                let dash = document.getElementById('dashboard-recents');
+                if (!dash) {
+                    document.getElementById('section-dashboard').insertAdjacentHTML('beforeend',
+                        `<div class="table-container" id="dashboard-recents" style="margin-top:25px;">
+                            <div class="table-header"><h3><i class="fas fa-clock"></i> Recent posts</h3><button class="btn btn-sm btn-secondary" onclick="switchSection('posts')">All posts</button></div>
+                            <div id="dashboard-recent-posts"></div>
+                        </div>
+                        <div class="table-container" style="margin-top:25px;">
+                            <div class="table-header"><h3><i class="fas fa-file-alt"></i> Recent pages</h3><button class="btn btn-sm btn-secondary" onclick="switchSection('pages')">All pages</button></div>
+                            <div id="dashboard-recent-pages"></div>
+                        </div>`);
+                }
+                document.getElementById('dashboard-recent-posts').innerHTML = `<table><thead><tr><th>Title</th><th>Date</th><th>Status</th></tr></thead><tbody>${recentHtml(posts)}</tbody></table>`;
+                document.getElementById('dashboard-recent-pages').innerHTML = `<table><thead><tr><th>Title</th><th>Date</th><th>Status</th></tr></thead><tbody>${recentHtml(pages)}</tbody></table>`;
+                if (pending) showStatus(`${pending} comment${pending > 1 ? 's' : ''} awaiting moderation.`, 'error');
             } catch (e) {
                 console.error(e);
             }
@@ -678,21 +1018,21 @@
         // --- PAGES ---
         async function loadPages() {
             const container = document.getElementById('pages-list');
-            container.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
+            container.innerHTML = '<div aria-hidden="true"><div class="skeleton-row"></div><div class="skeleton-row" style="width:80%"></div><div class="skeleton-row" style="width:60%"></div></div>';
             try {
                 const snap = await getDocs(collection(db, "pages"));
                 if (snap.empty) {
-                    container.innerHTML = '<div class="empty-state"><i class="fas fa-file-alt"></i><p>No pages yet.</p></div>';
+                    container.innerHTML = '<div class="empty-state"><i class="fas fa-file-alt"></i><p>No pages yet</p><p style="font-size:0.88rem;margin-bottom:18px;">Create your first page to get started.</p><button class="btn btn-sm" onclick="openPageModal()"><i class="fas fa-plus"></i> New page</button></div>';
                     return;
                 }
                 const docs = [];
                 snap.forEach(d => docs.push({ id: d.id, ...d.data() }));
-                docs.sort((a, b) => (a.title || '').localeCompare(b.title || ''));
+                docs.sort(newestFirst);
                 let html = `<table><thead><tr><th>Title</th><th>Slug</th><th>Status</th><th style="width:120px">Actions</th></tr></thead><tbody>`;
                 docs.forEach(p => {
                     html += `<tr>
-                        <td style="color:var(--text);font-weight:600">${p.title}</td>
-                        <td>/${p.slug || ''}</td>
+                        <td style="color:var(--text);font-weight:600">${escapeHtml(p.title || 'Untitled')}</td>
+                        <td>/${escapeHtml(p.slug || '')}</td>
                         <td><span class="status-badge ${p.status === 'published' ? 'status-published' : 'status-draft'}">${p.status || 'draft'}</span></td>
                         <td>
                             <div class="action-btns">
@@ -716,8 +1056,8 @@
             document.getElementById('page-slug').value = data?.slug || '';
             document.getElementById('page-slug').dataset.edited = data?.slug ? 'true' : '';
             document.getElementById('page-status').value = data?.status || 'published';
-            document.getElementById('page-content').value = data?.content || '';
-            document.getElementById('pageModalTitle').textContent = data?.id ? 'Edit Page' : 'New Page';
+            document.getElementById('page-content').value = richToHtml(data?.content);
+            document.getElementById('pageModalTitle').textContent = data?.id ? 'Edit page' : 'New page';
             openModal('pageModal');
         };
 
@@ -737,7 +1077,7 @@
                 content: document.getElementById('page-content').value.trim(),
                 updatedAt: serverTimestamp()
             };
-            if (!data.title) { showStatus('Title required.', 'error'); return; }
+            if (!data.title) { showStatus('Add a title before saving.', 'error'); return; }
             try {
                 if (id) {
                     await updateDoc(doc(db, "pages", id), data);
@@ -766,22 +1106,23 @@
         // --- POSTS ---
         async function loadPosts() {
             const container = document.getElementById('posts-list');
-            container.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
+            container.innerHTML = '<div aria-hidden="true"><div class="skeleton-row"></div><div class="skeleton-row" style="width:80%"></div><div class="skeleton-row" style="width:60%"></div></div>';
             try {
                 const snap = await getDocs(collection(db, "posts"));
                 if (snap.empty) {
-                    container.innerHTML = '<div class="empty-state"><i class="fas fa-newspaper"></i><p>No posts yet.</p></div>';
+                    container.innerHTML = '<div class="empty-state"><i class="fas fa-newspaper"></i><p>No posts yet</p><p style="font-size:0.88rem;margin-bottom:18px;">Create your first post to get started.</p><button class="btn btn-sm" onclick="openPostModal()"><i class="fas fa-plus"></i> New post</button></div>';
                     return;
                 }
                 const docs = [];
                 snap.forEach(d => docs.push({ id: d.id, ...d.data() }));
-                docs.sort((a, b) => (a.title || '').localeCompare(b.title || ''));
-                let html = `<table><thead><tr><th>Title</th><th>Category</th><th>Status</th><th style="width:120px">Actions</th></tr></thead><tbody>`;
+                docs.sort(newestFirst);
+                let html = `<table><thead><tr><th>Title</th><th>Category</th><th>Date</th><th>Status</th><th style="width:120px">Actions</th></tr></thead><tbody>`;
                 docs.forEach(p => {
                     html += `<tr>
-                        <td style="color:var(--text);font-weight:600">${p.title}</td>
-                        <td>${p.category || '-'}</td>
-                        <td><span class="status-badge ${p.status === 'published' ? 'status-published' : 'status-draft'}">${p.status || 'draft'}</span></td>
+                        <td style="color:var(--text);font-weight:600">${escapeHtml(p.title || 'Untitled')}</td>
+                        <td>${escapeHtml(p.category || '-')}</td>
+                        <td>${escapeHtml(fmtDate(p.createdAt || p.updatedAt))}</td>
+                        <td><span class="status-badge ${p.status === 'published' ? 'status-published' : 'status-draft'}">${escapeHtml(p.status || 'draft')}</span></td>
                         <td>
                             <div class="action-btns">
                                 <button class="btn-edit" onclick="editPost('${p.id}')"><i class="fas fa-edit"></i></button>
@@ -800,16 +1141,36 @@
 
         window.openPostModal = (data) => {
             document.getElementById('post-id').value = data?.id || '';
-            document.getElementById('post-title').value = data?.title || '';
-            document.getElementById('post-slug').value = data?.slug || '';
+            document.getElementById('post-title').value = typeof data?.title === 'string' ? data.title : '';
+            document.getElementById('post-slug').value = typeof data?.slug === 'string' ? data.slug : '';
             document.getElementById('post-slug').dataset.edited = data?.slug ? 'true' : '';
-            document.getElementById('post-category').value = data?.category || '';
-            document.getElementById('post-image').value = data?.image || '';
+            document.getElementById('post-category').value = typeof data?.category === 'string' ? data.category : '';
+            document.getElementById('post-image').value = typeof data?.image === 'string' ? data.image : '';
             document.getElementById('post-status').value = data?.status || 'published';
-            document.getElementById('post-excerpt').value = data?.excerpt || '';
-            document.getElementById('post-content').value = data?.content || '';
-            document.getElementById('postModalTitle').textContent = data?.id ? 'Edit Post' : 'New Post';
+            document.getElementById('post-author').value = typeof data?.author === 'string' ? data.author : (localStorage.getItem('userName') || '');
+            document.getElementById('post-tags').value = typeof data?.tags === 'string' ? data.tags : '';
+            document.getElementById('post-metadesc').value = typeof data?.metaDesc === 'string' ? data.metaDesc : '';
+            document.getElementById('post-excerpt').value = typeof data?.excerpt === 'string' ? data.excerpt : '';
+            document.getElementById('post-content').value = richToHtml(data?.content);
+            document.getElementById('postModalTitle').textContent = data?.id ? 'Edit post' : 'New post';
+            refreshMediaPicker();
+            previewPostImage();
             openModal('postModal');
+        };
+
+        window.previewPostImage = () => {
+            const url = document.getElementById('post-image').value.trim();
+            const img = document.getElementById('post-image-preview');
+            if (url) { img.src = url; img.style.display = 'block'; }
+            else { img.removeAttribute('src'); img.style.display = 'none'; }
+        };
+
+        window.useLibraryImage = () => {
+            const url = document.getElementById('post-image-library').value;
+            if (url) {
+                document.getElementById('post-image').value = url;
+                previewPostImage();
+            }
         };
 
         window.editPost = async (id) => {
@@ -827,11 +1188,14 @@
                 category: document.getElementById('post-category').value.trim(),
                 image: document.getElementById('post-image').value.trim(),
                 status: document.getElementById('post-status').value,
+                author: document.getElementById('post-author').value.trim(),
+                tags: document.getElementById('post-tags').value.trim(),
+                metaDesc: document.getElementById('post-metadesc').value.trim(),
                 excerpt: document.getElementById('post-excerpt').value.trim(),
                 content: document.getElementById('post-content').value.trim(),
                 updatedAt: serverTimestamp()
             };
-            if (!data.title) { showStatus('Title required.', 'error'); return; }
+            if (!data.title) { showStatus('Add a title before saving.', 'error'); return; }
             try {
                 if (id) {
                     await updateDoc(doc(db, "posts", id), data);
@@ -854,6 +1218,305 @@
                 showStatus('Post deleted.', 'success');
                 loadPosts();
                 loadDashboard();
+            } catch (e) { showStatus('Error: ' + e.message, 'error'); }
+        };
+
+        // --- MEDIA ---
+        async function loadMedia() {
+            const container = document.getElementById('media-list');
+            container.innerHTML = '<div aria-hidden="true"><div class="skeleton-row"></div><div class="skeleton-row" style="width:70%"></div></div>';
+            try {
+                const snap = await getDocs(collection(db, "media"));
+                const docs = [];
+                snap.forEach(d => docs.push({ id: d.id, ...d.data() }));
+                docs.sort(newestFirst);
+                document.getElementById('nav-media-count').textContent = docs.length;
+                if (!docs.length) {
+                    container.innerHTML = '<div class="empty-state"><i class="fas fa-images"></i><p>No media yet</p><p style="font-size:0.88rem;">Add an image URL above to build your library.</p></div>';
+                    return;
+                }
+                container.innerHTML = `<table><thead><tr><th style="width:90px">Preview</th><th>Name</th><th>URL</th><th style="width:140px">Actions</th></tr></thead><tbody>` +
+                    docs.map(m => `<tr>
+                        <td><img src="${escapeHtml(typeof m.url === 'string' ? m.url : '')}" alt="" style="width:64px;height:48px;object-fit:cover;border:2px solid var(--border);" loading="lazy"></td>
+                        <td style="color:var(--text);font-weight:600">${escapeHtml(m.name || 'Untitled')}</td>
+                        <td style="font-size:0.8rem;word-break:break-all;">${escapeHtml(typeof m.url === 'string' ? m.url : '')}</td>
+                        <td><div class="action-btns">
+                            <button class="btn-edit" onclick="copyMediaUrl('${m.id}')"><i class="fas fa-copy"></i></button>
+                            <button class="btn-delete" onclick="deleteMedia('${m.id}')"><i class="fas fa-trash"></i></button>
+                        </div></td>
+                    </tr>`).join('') + '</tbody></table>';
+                container._media = docs;
+            } catch (e) {
+                container.innerHTML = `<div class="empty-state"><p style="color:var(--danger);font-weight:700;">Error loading media</p><p style="font-size:0.85rem;color:var(--text2);">${escapeHtml(e.message || '')}</p></div>`;
+            }
+        }
+
+        window.addMedia = async () => {
+            const name = document.getElementById('media-name').value.trim();
+            const url = document.getElementById('media-url').value.trim();
+            if (!url) { showStatus('Add an image URL first.', 'error'); return; }
+            try {
+                await addDoc(collection(db, "media"), { name: name || 'Untitled', url, createdAt: serverTimestamp() });
+                document.getElementById('media-name').value = '';
+                document.getElementById('media-url').value = '';
+                showStatus('Media added!', 'success');
+                loadMedia();
+            } catch (e) { showStatus('Error: ' + e.message, 'error'); }
+        };
+
+        window.copyMediaUrl = async (id) => {
+            const docs = document.getElementById('media-list')._media || [];
+            const m = docs.find(x => x.id === id);
+            if (!m) return;
+            try {
+                await navigator.clipboard.writeText(m.url);
+                showStatus('URL copied!', 'success');
+            } catch (e) { showStatus('Copy failed: ' + m.url, 'error'); }
+        };
+
+        window.deleteMedia = async (id) => {
+            if (!confirm('Delete this media item?')) return;
+            try {
+                await deleteDoc(doc(db, "media", id));
+                showStatus('Media deleted.', 'success');
+                loadMedia();
+            } catch (e) { showStatus('Error: ' + e.message, 'error'); }
+        };
+
+        async function refreshMediaPicker() {
+            const sel = document.getElementById('post-image-library');
+            if (!sel) return;
+            sel.innerHTML = '<option value="">— Media library —</option>';
+            try {
+                const snap = await getDocs(collection(db, "media"));
+                const docs = [];
+                snap.forEach(d => docs.push({ id: d.id, ...d.data() }));
+                docs.sort(newestFirst);
+                docs.forEach(m => {
+                    if (typeof m.url !== 'string' || !m.url) return;
+                    const opt = document.createElement('option');
+                    opt.value = m.url;
+                    opt.textContent = m.name || m.url;
+                    sel.appendChild(opt);
+                });
+            } catch (e) { console.warn('media picker failed', e); }
+        }
+
+        // --- COMMENTS ---
+        async function loadComments() {
+            const container = document.getElementById('comments-list');
+            const filter = document.getElementById('comments-filter')?.value || 'pending';
+            container.innerHTML = '<div aria-hidden="true"><div class="skeleton-row"></div><div class="skeleton-row" style="width:70%"></div></div>';
+            try {
+                const snap = await getDocs(collection(db, "comments"));
+                let docs = [];
+                snap.forEach(d => docs.push({ id: d.id, ...d.data() }));
+                docs.sort(newestFirst);
+                const pending = docs.filter(c => c.status === 'pending').length;
+                document.getElementById('nav-comments-count').textContent = pending;
+                if (filter !== 'all') docs = docs.filter(c => (c.status || 'pending') === filter);
+                if (!docs.length) {
+                    container.innerHTML = '<div class="empty-state"><i class="fas fa-comments"></i><p>No comments here</p></div>';
+                    return;
+                }
+                const postTitles = {};
+                try {
+                    const psnap = await getDocs(collection(db, "posts"));
+                    psnap.forEach(d => postTitles[d.id] = d.data().title || d.id);
+                } catch (e) { /* titles optional */ }
+                container.innerHTML = `<table><thead><tr><th>Author</th><th>Comment</th><th>Post</th><th>Status</th><th style="width:150px">Actions</th></tr></thead><tbody>` +
+                    docs.map(c => `<tr>
+                        <td style="color:var(--text);font-weight:600">${escapeHtml(c.name || 'Anonymous')}<br><span style="font-size:0.78rem;color:var(--text2);">${escapeHtml(fmtDate(c.createdAt))}</span></td>
+                        <td style="max-width:280px;">${escapeHtml(typeof c.text === 'string' ? c.text.slice(0, 160) : '')}</td>
+                        <td style="font-size:0.85rem;">${escapeHtml(postTitles[c.postId] || c.postId || '-')}</td>
+                        <td><span class="status-badge ${c.status === 'approved' ? 'status-published' : 'status-draft'}">${escapeHtml(c.status || 'pending')}</span></td>
+                        <td><div class="action-btns">
+                            ${c.status === 'approved'
+                                ? `<button class="btn-edit" title="Unapprove" onclick="setCommentStatus('${c.id}','pending')"><i class="fas fa-eye-slash"></i></button>`
+                                : `<button class="btn-edit" title="Approve" onclick="setCommentStatus('${c.id}','approved')"><i class="fas fa-check"></i></button>`}
+                            <button class="btn-delete" onclick="deleteComment('${c.id}')"><i class="fas fa-trash"></i></button>
+                        </div></td>
+                    </tr>`).join('') + '</tbody></table>';
+            } catch (e) {
+                container.innerHTML = `<div class="empty-state"><p style="color:var(--danger);font-weight:700;">Error loading comments</p></div>`;
+            }
+        }
+
+        window.setCommentStatus = async (id, status) => {
+            try {
+                await updateDoc(doc(db, "comments", id), { status });
+                showStatus(status === 'approved' ? 'Comment approved!' : 'Comment moved to pending.', 'success');
+                loadComments();
+            } catch (e) { showStatus('Error: ' + e.message, 'error'); }
+        };
+
+        window.deleteComment = async (id) => {
+            if (!confirm('Delete this comment?')) return;
+            try {
+                await deleteDoc(doc(db, "comments", id));
+                showStatus('Comment deleted.', 'success');
+                loadComments();
+            } catch (e) { showStatus('Error: ' + e.message, 'error'); }
+        };
+
+        // --- USERS ---
+        async function loadUsers() {
+            const container = document.getElementById('users-list');
+            container.innerHTML = '<div aria-hidden="true"><div class="skeleton-row"></div><div class="skeleton-row" style="width:70%"></div></div>';
+            try {
+                const snap = await getDocs(collection(db, "users"));
+                const docs = [];
+                snap.forEach(d => docs.push({ id: d.id, ...d.data() }));
+                if (!docs.length) {
+                    container.innerHTML = '<div class="empty-state"><i class="fas fa-users"></i><p>No users yet</p></div>';
+                    return;
+                }
+                container.innerHTML = `<table><thead><tr><th>Name</th><th>Email</th><th>Role</th><th style="width:120px">Actions</th></tr></thead><tbody>` +
+                    docs.map(u => `<tr>
+                        <td style="color:var(--text);font-weight:600">${escapeHtml(u.name || '-')}</td>
+                        <td>${escapeHtml(u.email || '-')}</td>
+                        <td><span class="status-badge ${u.role === 'admin' ? 'status-published' : 'status-draft'}">${escapeHtml(u.role || 'editor')}</span></td>
+                        <td><div class="action-btns">
+                            <button class="btn-edit" onclick="editUser('${u.id}')"><i class="fas fa-edit"></i></button>
+                            <button class="btn-delete" onclick="deleteUser('${u.id}')"><i class="fas fa-trash"></i></button>
+                        </div></td>
+                    </tr>`).join('') + '</tbody></table>';
+            } catch (e) {
+                container.innerHTML = `<div class="empty-state"><p style="color:var(--danger);font-weight:700;">Error loading users</p></div>`;
+            }
+        }
+
+        window.openUserModal = (data) => {
+            document.getElementById('user-id').value = data?.id || '';
+            document.getElementById('user-name').value = data?.name || '';
+            document.getElementById('user-email').value = data?.email || '';
+            document.getElementById('user-password').value = data?.password || '';
+            document.getElementById('user-role').value = data?.role || 'editor';
+            document.getElementById('userModalTitle').textContent = data?.id ? 'Edit user' : 'New user';
+            openModal('userModal');
+        };
+
+        window.editUser = async (id) => {
+            try {
+                const snap = await getDoc(doc(db, "users", id));
+                if (snap.exists()) openUserModal({ id, ...snap.data() });
+            } catch (e) { console.error(e); }
+        };
+
+        window.saveUser = async () => {
+            const id = document.getElementById('user-id').value;
+            const data = {
+                name: document.getElementById('user-name').value.trim(),
+                email: document.getElementById('user-email').value.trim(),
+                password: document.getElementById('user-password').value,
+                role: document.getElementById('user-role').value,
+                updatedAt: serverTimestamp()
+            };
+            if (!data.name || !data.email) { showStatus('Name and email required.', 'error'); return; }
+            try {
+                if (id) {
+                    await updateDoc(doc(db, "users", id), data);
+                    showStatus('User updated!', 'success');
+                } else {
+                    data.createdAt = serverTimestamp();
+                    await addDoc(collection(db, "users"), data);
+                    showStatus('User created!', 'success');
+                }
+                closeModal('userModal');
+                loadUsers();
+            } catch (e) { showStatus('Error: ' + e.message, 'error'); }
+        };
+
+        window.deleteUser = async (id) => {
+            if (!confirm('Delete this user?')) return;
+            try {
+                await deleteDoc(doc(db, "users", id));
+                showStatus('User deleted.', 'success');
+                loadUsers();
+            } catch (e) { showStatus('Error: ' + e.message, 'error'); }
+        };
+
+        // --- MENUS ---
+        let menuItems = [];
+        function menuLabel(item) {
+            if (item.kind === 'home') return item.label || 'Home';
+            if (item.kind === 'posts') return item.label || 'Posts';
+            if (item.kind === 'contact') return item.label || 'Contact';
+            if (item.kind === 'page') return item.label || item.slug || 'Page';
+            return item.label || item.url || 'Link';
+        }
+        function renderMenuRows() {
+            const box = document.getElementById('menu-rows');
+            if (!menuItems.length) {
+                box.innerHTML = '<div class="empty-state"><i class="fas fa-bars"></i><p>Menu is empty — auto navigation is used</p></div>';
+                return;
+            }
+            box.innerHTML = menuItems.map((item, i) => `
+                <div style="display:flex;align-items:center;gap:10px;background:#fff;border:2px solid var(--border);padding:10px 14px;margin-bottom:10px;">
+                    <span style="font-weight:700;color:var(--text);flex:1;">${escapeHtml(menuLabel(item))} <span style="font-size:0.75rem;color:var(--text2);font-weight:600;">(${escapeHtml(item.kind)})</span></span>
+                    <div class="action-btns">
+                        <button class="btn-edit" title="Move up" onclick="moveMenuItem(${i},-1)" ${i === 0 ? 'disabled style="opacity:0.4"' : ''}><i class="fas fa-arrow-up"></i></button>
+                        <button class="btn-edit" title="Move down" onclick="moveMenuItem(${i},1)" ${i === menuItems.length - 1 ? 'disabled style="opacity:0.4"' : ''}><i class="fas fa-arrow-down"></i></button>
+                        <button class="btn-delete" onclick="removeMenuItem(${i})"><i class="fas fa-trash"></i></button>
+                    </div>
+                </div>`).join('');
+        }
+        async function loadMenus() {
+            renderMenuRows();
+            const kind = document.getElementById('menu-kind');
+            const syncTarget = () => {
+                const isCustom = kind.value === 'custom';
+                document.getElementById('menu-target-wrap').style.display = isCustom ? 'none' : 'block';
+                document.getElementById('menu-url-wrap').style.display = isCustom ? 'block' : 'none';
+            };
+            kind.onchange = syncTarget;
+            syncTarget();
+            try {
+                const snap = await getDoc(doc(db, "settings", "general"));
+                const s = snap.exists() ? snap.data() : {};
+                menuItems = Array.isArray(s.menu) ? s.menu : [];
+                renderMenuRows();
+                const psnap = await getDocs(collection(db, "pages"));
+                const pages = [];
+                psnap.forEach(d => pages.push({ id: d.id, ...d.data() }));
+                pages.sort((a, b) => (a.title || '').localeCompare(b.title || ''));
+                document.getElementById('menu-target').innerHTML = pages.map(p =>
+                    `<option value="${escapeHtml(p.slug || '')}">${escapeHtml(p.title || 'Untitled')}</option>`).join('');
+            } catch (e) { console.error(e); }
+        }
+        window.addMenuItem = () => {
+            const kind = document.getElementById('menu-kind').value;
+            const label = document.getElementById('menu-label').value.trim();
+            const item = { kind, label };
+            if (kind === 'page') {
+                item.slug = document.getElementById('menu-target').value;
+                if (!item.slug) { showStatus('Pick a page first.', 'error'); return; }
+                if (!item.label) item.label = document.getElementById('menu-target').selectedOptions[0]?.textContent || 'Page';
+            }
+            if (kind === 'custom') {
+                item.url = document.getElementById('menu-url').value.trim();
+                if (!item.url) { showStatus('Add a URL first.', 'error'); return; }
+                if (!item.label) item.label = item.url;
+            }
+            menuItems.push(item);
+            document.getElementById('menu-label').value = '';
+            document.getElementById('menu-url').value = '';
+            renderMenuRows();
+        };
+        window.moveMenuItem = (i, dir) => {
+            const j = i + dir;
+            if (j < 0 || j >= menuItems.length) return;
+            [menuItems[i], menuItems[j]] = [menuItems[j], menuItems[i]];
+            renderMenuRows();
+        };
+        window.removeMenuItem = (i) => {
+            menuItems.splice(i, 1);
+            renderMenuRows();
+        };
+        window.saveMenus = async () => {
+            try {
+                await setDoc(doc(db, "settings", "general"), { menu: menuItems, updatedAt: serverTimestamp() }, { merge: true });
+                showStatus('Menu saved!', 'success');
             } catch (e) { showStatus('Error: ' + e.message, 'error'); }
         };
 
@@ -880,7 +1543,7 @@
                         </div>
                         <div class="form-group">
                             <label>Footer Text</label>
-                            <input type="text" id="s-footer" value="${s.footerText || ''}" placeholder="© 2024 My CMS">
+                            <input type="text" id="s-footer" value="${s.footerText || ''}" placeholder="Powered by Davius">
                         </div>
                     </div>
                     <div class="form-group">
@@ -959,14 +1622,14 @@
             const origOpenPageModal = window.openPageModal;
             window.openPageModal = (data) => {
                 origOpenPageModal(data);
-                if (quillPage) quillPage.root.innerHTML = data?.content || '';
+                if (quillPage) quillPage.root.innerHTML = richToHtml(data?.content);
             };
 
             // Patch openPostModal to set Quill content
             const origOpenPostModal = window.openPostModal;
             window.openPostModal = (data) => {
                 origOpenPostModal(data);
-                if (quillPost) quillPost.root.innerHTML = data?.content || '';
+                if (quillPost) quillPost.root.innerHTML = richToHtml(data?.content);
             };
 
             // Patch savePage to get HTML from Quill
