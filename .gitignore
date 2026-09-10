@@ -1,0 +1,5 @@
+node_modules/
+# JS mentah (belum di-obfuscate) — lokal saja, jangan push
+js/src/
+# Tools obfuscation/rotasi key — lokal saja
+tools_*.js
