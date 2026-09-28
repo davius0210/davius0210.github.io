@@ -402,22 +402,22 @@
             border: 2px solid var(--border);
             overflow: hidden;
             cursor: pointer;
-            transition: transform 0.2s ease;
             display: flex;
             flex-direction: column;
-            box-shadow: 5px 5px 0px rgba(0, 0, 0, 0.08);
+            position: relative;
         }
 
         .post-card:nth-child(odd) {
-            transform: rotate(-0.4deg);
+            --rz: -0.4deg;
         }
 
         .post-card:nth-child(even) {
-            transform: rotate(0.4deg);
+            --rz: 0.4deg;
         }
 
         .post-card:hover {
-            transform: rotate(0deg) translateY(-5px);
+            --rz: 0deg;
+            --lift: -10px;
             border-color: var(--primary);
         }
 
@@ -436,7 +436,11 @@
         }
 
         .post-card:hover .post-image img {
-            transform: scale(1.06);
+            transform: scale(1.12) translate3d(calc(var(--px, 0) * -18px), calc(var(--py, 0) * -18px), 0);
+        }
+
+        .post-card.is-tilting .post-image img {
+            transition: transform 0.12s linear;
         }
 
         .post-info {
@@ -490,13 +494,17 @@
             display: flex;
             align-items: center;
             gap: 12px;
-            transition: transform 0.2s ease;
-            box-shadow: 4px 4px 0px rgba(0, 0, 0, 0.08);
+            position: relative;
         }
 
         .contact-item:hover {
             border-color: var(--primary);
-            transform: rotate(-1deg);
+            --rz: -1deg;
+            --lift: -6px;
+        }
+
+        .contact-item:hover .contact-icon {
+            transform: translateZ(0) rotateY(180deg);
         }
 
         .contact-icon {
@@ -508,6 +516,7 @@
             background: var(--paper-blue);
             color: var(--primary-d);
             flex-shrink: 0;
+            transition: transform 0.6s cubic-bezier(.2, .8, .2, 1);
         }
 
         /* Footer */
@@ -857,6 +866,363 @@
             display: none;
         }
 
+        /* ============================================================
+           3D LAYER — dipakai bersama js/index-3d.js
+           ============================================================ */
+        :root {
+            --ease-3d: cubic-bezier(.2, .8, .2, 1);
+            --extrude: #c9c3ab;
+        }
+
+        #bg3d {
+            position: fixed;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+            display: block;
+        }
+
+        /* Panel utama "jatuh" ke tempatnya dengan rotasi 3D */
+        .page-wrapper {
+            perspective: 1600px;
+        }
+
+        .container {
+            animation: panel-in 1s var(--ease-3d) both;
+            transform-origin: 50% 0;
+            box-shadow:
+                8px 8px 0 rgba(0, 0, 0, 0.12),
+                0 30px 60px -20px rgba(20, 50, 80, 0.45);
+        }
+
+        @keyframes panel-in {
+            from {
+                opacity: 0;
+                transform: rotateX(14deg) translate3d(0, 60px, -120px);
+            }
+
+            to {
+                opacity: 1;
+                transform: none;
+            }
+        }
+
+        /* Brand: kubus yang berputar */
+        .brand-icon {
+            transition: transform 0.7s var(--ease-3d);
+            box-shadow: inset -4px -4px 0 rgba(0, 0, 0, 0.18), inset 3px 3px 0 rgba(255, 255, 255, 0.25);
+        }
+
+        .navbar-brand {
+            perspective: 400px;
+        }
+
+        .navbar-brand:hover .brand-icon {
+            transform: rotateY(360deg) rotateX(20deg);
+        }
+
+        #site-name {
+            text-shadow: 1px 1px 0 var(--extrude), 2px 2px 0 var(--extrude), 3px 3px 0 rgba(0, 0, 0, 0.08);
+        }
+
+        /* Tombol navigasi: tombol kertas timbul */
+        .nav-links {
+            perspective: 600px;
+        }
+
+        .nav-links a,
+        .nav-links button {
+            transform-style: preserve-3d;
+            box-shadow: 0 0 0 transparent;
+            transition: transform 0.25s var(--ease-3d), color 0.2s ease, background 0.2s ease, box-shadow 0.25s var(--ease-3d);
+        }
+
+        .nav-links a:hover,
+        .nav-links button:hover,
+        .nav-links a.active,
+        .nav-links button.active {
+            transform: translate3d(0, -3px, 0) rotateX(12deg);
+            box-shadow: 0 4px 0 #a9c1dc, 0 10px 14px -6px rgba(63, 109, 163, 0.45);
+        }
+
+        .nav-links a:active,
+        .nav-links button:active {
+            transform: translate3d(0, 1px, 0);
+            box-shadow: 0 1px 0 #a9c1dc;
+        }
+
+        /* Hero: teks timbul + pulau voxel 3D */
+        .hero {
+            perspective: 900px;
+        }
+
+        .hero h1 {
+            text-shadow:
+                1px 1px 0 var(--extrude),
+                2px 2px 0 var(--extrude),
+                3px 3px 0 var(--extrude),
+                4px 4px 0 #bdb69c,
+                5px 5px 0 #bdb69c,
+                8px 12px 18px rgba(20, 50, 80, 0.25);
+        }
+
+        .hero h1 .accent {
+            text-shadow:
+                1px 1px 0 #3f6da3,
+                2px 2px 0 #3f6da3,
+                3px 3px 0 #3f6da3,
+                4px 4px 0 #2f5585,
+                5px 5px 0 #2f5585,
+                8px 12px 18px rgba(20, 50, 80, 0.3);
+        }
+
+        .hero--3d {
+            max-width: none;
+            display: grid;
+            grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+            grid-template-rows: auto auto 1fr;
+            column-gap: 24px;
+            align-items: start;
+            min-height: 420px;
+        }
+
+        .hero--3d > :not(.hero-3d) {
+            grid-column: 1;
+        }
+
+        .hero-3d {
+            grid-column: 2;
+            grid-row: 1 / -1;
+            position: relative;
+            align-self: stretch;
+            min-height: 380px;
+            margin: -40px -20px -30px 0;
+        }
+
+        .hero-3d canvas {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            display: block;
+            cursor: grab;
+            touch-action: pan-y;
+        }
+
+        .hero-3d.is-dragging canvas {
+            cursor: grabbing;
+        }
+
+        .hero-3d-hint {
+            position: absolute;
+            right: 18px;
+            bottom: 14px;
+            font-size: 0.72rem;
+            font-weight: 700;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            color: var(--ink-soft);
+            background: #fff;
+            border: 2px solid var(--border);
+            padding: 4px 10px;
+            pointer-events: none;
+            opacity: 0.85;
+            transition: opacity 0.3s ease;
+        }
+
+        .hero-3d.is-dragging .hero-3d-hint {
+            opacity: 0;
+        }
+
+        /* Tombol utama: blok hijau yang bisa ditekan */
+        .btn-primary {
+            transition: transform 0.25s var(--ease-3d), filter 0.2s ease, border-bottom-width 0.1s ease;
+        }
+
+        .hero .cta-btns .btn-primary:hover,
+        .btn-primary:hover {
+            transform: perspective(500px) rotateX(14deg) translate3d(0, -4px, 0) scale(1.05);
+            filter: brightness(1.06) drop-shadow(0 10px 8px rgba(22, 163, 74, 0.35));
+        }
+
+        .hero .cta-btns .btn-primary:active,
+        .btn-primary:active {
+            transform: perspective(500px) translate3d(0, 4px, 0);
+            border-bottom-width: 2px;
+        }
+
+        .btn-outline:hover {
+            transform: perspective(500px) rotateY(-10deg) rotateZ(-1deg) translate3d(0, -2px, 0);
+        }
+
+        /* Kartu 3D: tilt mengikuti kursor, bayangan bergeser, kilau */
+        .post-card,
+        .contact-item,
+        .skeleton-card {
+            --rx: 0deg;
+            --ry: 0deg;
+            --lift: 0px;
+            transform: perspective(900px) rotateX(var(--rx)) rotateY(var(--ry)) rotateZ(var(--rz, 0deg)) translate3d(0, var(--lift), 0);
+            box-shadow:
+                var(--sx, 5px) var(--sy, 5px) 0 rgba(0, 0, 0, 0.08),
+                calc(var(--sx, 5px) * 2) calc(var(--sy, 5px) * 2.4) 28px -8px rgba(20, 50, 80, 0.28);
+            transition:
+                transform 0.5s var(--ease-3d),
+                box-shadow 0.5s var(--ease-3d),
+                border-color 0.2s ease,
+                opacity 0.7s ease var(--d, 0ms),
+                translate 0.9s var(--ease-3d) var(--d, 0ms),
+                rotate 0.9s var(--ease-3d) var(--d, 0ms);
+            will-change: transform;
+        }
+
+        .post-card.is-tilting,
+        .contact-item.is-tilting,
+        .skeleton-card.is-tilting {
+            transition:
+                transform 0.12s linear,
+                box-shadow 0.12s linear,
+                border-color 0.2s ease,
+                opacity 0.7s ease,
+                translate 0.9s var(--ease-3d),
+                rotate 0.9s var(--ease-3d);
+        }
+
+        .post-card::after,
+        .contact-item::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            background: radial-gradient(circle at var(--gx, 50%) var(--gy, 0%), rgba(255, 255, 255, 0.55), rgba(255, 255, 255, 0) 55%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            mix-blend-mode: soft-light;
+        }
+
+        .post-card.is-tilting::after,
+        .contact-item.is-tilting::after {
+            opacity: 1;
+        }
+
+        .post-category {
+            box-shadow: 2px 2px 0 #a9c1dc;
+        }
+
+        .posts-grid,
+        .contact-grid {
+            perspective: 1400px;
+        }
+
+        /* Section title bergaya pita timbul */
+        .section-title {
+            text-shadow: 1px 1px 0 #fff, 2px 2px 0 var(--paper-edge);
+        }
+
+        /* Reveal 3D saat scroll */
+        .r3d {
+            opacity: 0;
+            translate: 0 46px 0;
+            rotate: x 26deg;
+            transform-origin: 50% 0;
+        }
+
+        .r3d.r3d-in {
+            opacity: 1;
+            translate: 0 0 0;
+            rotate: x 0deg;
+        }
+
+        .hero > .r3d,
+        .section-title.r3d,
+        .posts-toolbar.r3d,
+        .page-content > .r3d {
+            transition: opacity 0.7s ease var(--d, 0ms), translate 0.9s var(--ease-3d) var(--d, 0ms), rotate 0.9s var(--ease-3d) var(--d, 0ms);
+        }
+
+        .content-area {
+            perspective: 1400px;
+        }
+
+        /* Modal: kartu yang berputar masuk */
+        .modal {
+            perspective: 1400px;
+        }
+
+        .modal.active {
+            animation: modal-fade 0.3s ease both;
+        }
+
+        .modal.active .modal-content {
+            animation: modal-3d 0.6s var(--ease-3d) both;
+            box-shadow: 8px 8px 0 rgba(0, 0, 0, 0.15), 0 40px 80px -20px rgba(15, 30, 50, 0.6);
+        }
+
+        @keyframes modal-fade {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes modal-3d {
+            from {
+                opacity: 0;
+                transform: rotateX(-22deg) rotateY(6deg) translate3d(0, 60px, -160px);
+            }
+
+            to {
+                opacity: 1;
+                transform: none;
+            }
+        }
+
+        .modal-close {
+            box-shadow: 0 4px 0 var(--border);
+        }
+
+        .modal-close:hover {
+            transform: rotate(90deg) scale(1.05);
+        }
+
+        .modal-close:active {
+            transform: translateY(3px);
+            box-shadow: 0 1px 0 var(--border);
+        }
+
+        @media (max-width: 900px) {
+            .hero--3d {
+                grid-template-columns: 1fr;
+                grid-template-rows: none;
+                min-height: 0;
+            }
+
+            .hero-3d {
+                grid-column: 1;
+                grid-row: auto;
+                min-height: 280px;
+                margin: 16px 0 0;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .container,
+            .modal.active,
+            .modal.active .modal-content {
+                animation: none;
+            }
+
+            .post-card,
+            .contact-item,
+            .skeleton-card,
+            .nav-links a,
+            .nav-links button,
+            .brand-icon,
+            .btn-primary {
+                transition: none;
+            }
+        }
+
         /* Bob corner widget — model transparan tanpa background */
         #bob-widget {
             position: fixed;
@@ -1031,6 +1397,9 @@
 
     <!-- FIREBASE + LOGIC -->
     <script type="module" src="js/index-app.js"></script>
+
+    <!-- Lapisan 3D: background, pulau voxel di hero, tilt kartu, reveal -->
+    <script type="module" src="js/index-3d.js"></script>
 
     <!-- Bob corner mascot: skeletal .glb dari Simitone Avatar Export -->
     <script type="module" src="js/index-bob.js"></script>
